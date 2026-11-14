@@ -24,6 +24,12 @@ jobs:
       - name: Generate the Android project
         run: flutter create --platforms=android --org org.falconhealth --project-name astrocare .
  
+      - name: Allow internet access (sign-in and online backup)
+        run: >-
+          sed -i
+          's|<application|<uses-permission android:name="android.permission.INTERNET"/><application|'
+          android/app/src/main/AndroidManifest.xml
+ 
       - name: Remove the default template test
         run: rm -f test/widget_test.dart
  

@@ -6,8 +6,6 @@ enum Hazard { radiation, isolation, distance, gravity, environment }
  
 enum MissionEnvironment { spacecraft, station, rover, lunarBase, marsBase }
  
-enum BodyZone { head, heart, lungs, abdomen, core, legs }
- 
 enum AlertCause { threshold, trend, synergy }
  
 enum AlertStatus { active, acknowledged, resolved }
@@ -27,7 +25,6 @@ T enumByName<T extends Enum>(List<T> values, Object? name, T fallback) {
 class Indicator {
   final String code;
   final String unit;
-  final BodyZone zone;
   final List<Hazard> hazards;
   final double min;
   final double max;
@@ -40,13 +37,9 @@ class Indicator {
   /// True for a 1 to 5 self-assessment score.
   final bool isScore;
  
-  /// True when the ranges are a percentage of change against a personal baseline.
-  final bool relativeToBaseline;
- 
   const Indicator({
     required this.code,
     required this.unit,
-    required this.zone,
     required this.hazards,
     required this.min,
     required this.max,
@@ -56,7 +49,6 @@ class Indicator {
     required this.attentionHigh,
     this.decimals = 0,
     this.isScore = false,
-    this.relativeToBaseline = false,
   });
  
   AlertLevel levelFor(double v) {
@@ -68,74 +60,47 @@ class Indicator {
   String format(double v) => v.toStringAsFixed(decimals);
 }
  
-class CrewMember {
-  final String id;
-  final String name;
-  final String role;
-  final bool isCommander;
-  final double baselineWeight;
- 
-  const CrewMember({
-
-    required this.id,
-    required this.name,
-    required this.role,
-    this.isCommander = false,
-    this.baselineWeight = 0,
-  });
- 
-  Map<String, dynamic> toJson() => {
-    'id': id,
-    'name': name,
-    'role': role,
-    'isCommander': isCommander,
-    'baselineWeight': baselineWeight,
-  };
- 
-  factory CrewMember.fromJson(Map<String, dynamic> j) => CrewMember(
-    id: '${j['id']}',
-    name: '${j['name']}',
-    role: '${j['role']}',
-    isCommander: j['isCommander'] == true,
-    baselineWeight: (j['baselineWeight'] as num?)?.toDouble() ?? 0,
-  );
-}
- 
 class Measurement {
   final String id;
-  final String memberId;
   final String indicator;
   final double value;
   final DateTime at;
  
-  const Measurement({
+  /// True once the measurement is saved in the online database.
+  bool synced;
+ 
+  Measurement({
     required this.id,
-    required this.memberId,
     required this.indicator,
     required this.value,
     required this.at,
+    this.synced = false,
   });
+
+  /// Fields stored in the online database.
+  Map<String, dynamic> toRemote() => {'indicator': indicator, 'value': value, 'at': at};
  
   Map<String, dynamic> toJson() => {
     'id': id,
-    'memberId': memberId,
     'indicator': indicator,
     'value': value,
     'at': at.toIso8601String(),
+    'synced': synced,
   };
  
   factory Measurement.fromJson(Map<String, dynamic> j) => Measurement(
     id: '${j['id']}',
-    memberId: '${j['memberId']}',
     indicator: '${j['indicator']}',
     value: (j['value'] as num?)?.toDouble() ?? 0,
-    at: DateTime.tryParse('${j['at']}') ?? DateTime.now(),
+    at: j['at'] is DateTime
+        ? j['at'] as DateTime
+        : (DateTime.tryParse('${j['at']}') ?? DateTime.now()),
+    synced: j['synced'] == true,
   );
 }
  
 class HealthAlert {
   final String id;
-  final String memberId;
   final String indicator;
   final double value;
   final AlertLevel level;
@@ -145,10 +110,10 @@ class HealthAlert {
   final String ruleId;
   final DateTime createdAt;
   AlertStatus status;
+  bool synced;
  
   HealthAlert({
     required this.id,
-    required this.memberId,
     required this.indicator,
     required this.value,
     required this.level,
@@ -156,13 +121,23 @@ class HealthAlert {
     required this.createdAt,
     this.ruleId = '',
     this.status = AlertStatus.active,
+    this.synced = false,
   });
  
   bool get isOpen => status != AlertStatus.resolved;
+ 
+  Map<String, dynamic> toRemote() => {
+    'indicator': indicator,
+    'value': value,
+    'level': level.name,
+    'cause': cause.name,
+    'ruleId': ruleId,
+    'createdAt': createdAt,
+    'status': status.name,
+  };
+ 
   Map<String, dynamic> toJson() => {
     'id': id,
-
-    'memberId': memberId,
     'indicator': indicator,
     'value': value,
     'level': level.name,
@@ -170,19 +145,23 @@ class HealthAlert {
     'ruleId': ruleId,
     'createdAt': createdAt.toIso8601String(),
     'status': status.name,
+    'synced': synced,
   };
  
   factory HealthAlert.fromJson(Map<String, dynamic> j) => HealthAlert(
     id: '${j['id']}',
-    memberId: '${j['memberId']}',
     indicator: '${j['indicator']}',
     value: (j['value'] as num?)?.toDouble() ?? 0,
     level: enumByName(AlertLevel.values, j['level'], AlertLevel.attention),
     cause: enumByName(AlertCause.values, j['cause'], AlertCause.threshold),
     ruleId: '${j['ruleId'] ?? ''}',
-    createdAt: DateTime.tryParse('${j['createdAt']}') ?? DateTime.now(),
+    createdAt: j['createdAt'] is DateTime
+        ? j['createdAt'] as DateTime
+        : (DateTime.tryParse('${j['createdAt']}') ?? DateTime.now()),
     status: enumByName(AlertStatus.values, j['status'], AlertStatus.active),
+    synced: j['synced'] == true,
   );
+
 }
  
 /// A combination of indicators that, under a spaceflight hazard, raises the risk.
@@ -218,4 +197,44 @@ class AnalysisResult {
     required this.synergies,
     required this.cause,
   });
+}
+/// The signed-in astronaut. Kept on the device so the app opens without any network.
+class Session {
+  final String uid;
+  final String email;
+  String name;
+  String role;
+  String refreshToken;
+  String idToken;
+  DateTime idTokenExpiry;
+ 
+  Session({
+    required this.uid,
+    required this.email,
+    required this.name,
+    required this.role,
+    required this.refreshToken,
+    required this.idToken,
+    required this.idTokenExpiry,
+  });
+ 
+  Map<String, dynamic> toJson() => {
+    'uid': uid,
+    'email': email,
+    'name': name,
+    'role': role,
+    'refreshToken': refreshToken,
+    'idToken': idToken,
+    'idTokenExpiry': idTokenExpiry.toIso8601String(),
+  };
+ 
+  factory Session.fromJson(Map<String, dynamic> j) => Session(
+    uid: '${j['uid']}',
+    email: '${j['email']}',
+    name: '${j['name'] ?? ''}',
+    role: '${j['role'] ?? ''}',
+    refreshToken: '${j['refreshToken'] ?? ''}',
+    idToken: '${j['idToken'] ?? ''}',
+    idTokenExpiry: DateTime.tryParse('${j['idTokenExpiry']}') ?? DateTime(2000),
+  );
 }

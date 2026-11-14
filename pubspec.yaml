@@ -1,7 +1,7 @@
 name: astrocare
-description: AstroCare - offline health monitoring for astronauts (NASA Space Apps 2026).
+description: AstroCare - health monitoring for astronauts (NASA Space Apps 2026).
 publish_to: "none"
-version: 1.0.0+1
+version: 2.0.0+2
  
 environment:
   sdk: ">=3.3.0 <4.0.0"
@@ -10,6 +10,9 @@ dependencies:
   flutter:
     sdk: flutter
   shared_preferences: ^2.2.0
+  http: ^1.2.0
+  path_provider: ^2.1.0
+  share_plus: ^12.0.0
  
 dev_dependencies:
   flutter_test:

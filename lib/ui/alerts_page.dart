@@ -9,64 +9,41 @@ import 'add_measurement_sheet.dart';
 import 'theme.dart';
 import 'widgets.dart';
  
-class AlertsPage extends StatefulWidget {
-  const AlertsPage({super.key});
+Widget buildAlertsPage(BuildContext context) {
+  final all = appState.sortedAlerts();
+  final open = all.where((a) => a.isOpen).toList();
+  final past = all.where((a) => !a.isOpen).take(15).toList();
  
-  @override
-  State<AlertsPage> createState() => _AlertsPageState();
-}
- 
-class _AlertsPageState extends State<AlertsPage> {
-  bool _wholeCrew = false;
- 
-  @override
-  Widget build(BuildContext context) {
-    final commander = appState.currentMember.isCommander;
-    final String? scope = (commander && _wholeCrew) ? null : appState.currentMemberId;
-    final all = appState.allAlerts(scope);
-    final open = all.where((a) => a.isOpen).toList();
-    final past = all.where((a) => !a.isOpen).take(15).toList();
- 
-    return ListView(
-      padding: const EdgeInsets.fromLTRB(12, 12, 12, 24),
-      children: [
-        if (commander)
-          SwitchListTile(
-            value: _wholeCrew,
-            onChanged: (v) => setState(() => _wholeCrew = v),
-            title: Text(t('alerts.crew')),
-            secondary: const Icon(Icons.groups_outlined),
+  return ListView(
+    padding: const EdgeInsets.fromLTRB(12, 12, 12, 24),
+    children: [
+      if (open.isEmpty)
+        Card(
+          child: ListTile(
+            leading: Icon(Icons.check_circle, color: levelColor(context, AlertLevel.nominal)),
+            title: Text(t('alerts.none')),
           ),
-        if (open.isEmpty)
-          Card(
-            child: ListTile(
-              leading: Icon(Icons.check_circle, color: levelColor(context, AlertLevel.nominal)),
-              title: Text(t('alerts.none')),
-            ),
-          )
-        else ...[
-          SectionTitle('${t('alerts.open')} (${open.length})'),
-          for (final a in open) _AlertTile(alert: a),
-        ],
-        if (past.isNotEmpty) ...[
-          SectionTitle(t('alerts.past')),
-          for (final a in past) _AlertTile(alert: a),
-        ],
+        )
+      else ...[
+        SectionTitle('${t('alerts.open')} (${open.length})'),
+        for (final a in open) _AlertTile(alert: a),
       ],
-    );
-  }
+      if (past.isNotEmpty) ...[
+        SectionTitle(t('alerts.past')),
+        for (final a in past) _AlertTile(alert: a),
+      ],
+    ],
+  );
 }
  
 class _AlertTile extends StatelessWidget {
   final HealthAlert alert;
- 
   const _AlertTile({required this.alert});
  
   @override
   Widget build(BuildContext context) {
     final indicator = indicatorByCode(alert.indicator);
     final color = alert.isOpen ? levelColor(context, alert.level) : levelColor(context, null);
-    final member = appState.memberById(alert.memberId);
     return Card(
       clipBehavior: Clip.antiAlias,
       child: InkWell(
@@ -76,7 +53,6 @@ class _AlertTile extends StatelessWidget {
         child: IntrinsicHeight(
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.stretch,
-
             children: [
               Container(width: 8, color: color),
               Expanded(
@@ -97,9 +73,10 @@ class _AlertTile extends StatelessWidget {
                             ),
                             const SizedBox(height: 2),
                             Text(
-                              '${member.name} · ${t('level.${alert.level.name}')} · '
+                              '${t('level.${alert.level.name}')} - '
                               '${t('status.${alert.status.name}')}',
                               style: const TextStyle(fontSize: 13),
+
                             ),
                             Text(
                               appState.formatDate(alert.createdAt),
@@ -140,7 +117,6 @@ class AlertDetailPage extends StatelessWidget {
         }
         final code = alert.indicator;
         final indicator = indicatorByCode(code);
-        final member = appState.memberById(alert.memberId);
         final color = levelColor(context, alert.level);
         final rule = alert.ruleId.isEmpty ? null : synergyById(alert.ruleId);
         final critical = alert.level == AlertLevel.critical;
@@ -150,6 +126,7 @@ class AlertDetailPage extends StatelessWidget {
         if (rule != null) {
           causeText = '$causeText\n${t('syn.${rule.id}.name')}: ${t('syn.${rule.id}.risk')}';
         }
+        causeText = '$causeText\n${t('ind.$code.space')}';
         var recoText = t('ind.$code.attention');
         if (rule != null) recoText = '$recoText\n${t('syn.${rule.id}.advice')}';
         recoText = '$recoText\n${t('alert.ground')}';
@@ -161,7 +138,6 @@ class AlertDetailPage extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(12, 12, 12, 24),
               children: [
                 Container(
-
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
                     color: color.withAlpha(36),
@@ -177,7 +153,7 @@ class AlertDetailPage extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              '${t('level.${alert.level.name}')} · '
+                              '${t('level.${alert.level.name}')} - '
                               '${t('status.${alert.status.name}')}',
                               style: TextStyle(
                                 color: color,
@@ -185,13 +161,14 @@ class AlertDetailPage extends StatelessWidget {
                                 fontSize: 17,
                               ),
                             ),
+
                             const SizedBox(height: 4),
                             Text(
                               '${t('alert.value')}: ${indicator.format(alert.value)} '
                               '${indicator.unit}',
                               style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                             ),
-                            Text('${member.name} · ${appState.formatDate(alert.createdAt)}'),
+                            Text(appState.formatDate(alert.createdAt)),
                           ],
                         ),
                       ),
@@ -246,22 +223,14 @@ class AlertDetailPage extends StatelessWidget {
                                     ),
                                   ),
                                 ],
-
                               ),
                             ),
                         ],
                       ),
                     ),
                   ),
-                InfoBlock(icon: Icons.help_outline, title: t('alert.cause'), body: causeText),
                 InfoBlock(icon: Icons.task_alt, title: t('alert.reco'), body: recoText),
-                InfoBlock(
-                  icon: Icons.rocket_launch_outlined,
-                  title: t('alert.space'),
-                  body:
-                      '${t('ind.$code.space')}\n'
-                      '${indicator.hazards.map((h) => t('haz.${h.name}.name')).join(' · ')}',
-                ),
+                InfoBlock(icon: Icons.help_outline, title: t('alert.cause'), body: causeText),
                 const SizedBox(height: 12),
                 if (alert.status == AlertStatus.active)
                   FilledButton.icon(
@@ -277,7 +246,8 @@ class AlertDetailPage extends StatelessWidget {
                       child: Text(t('alert.ack')),
                     ),
                   ),
-                if (alert.isOpen && alert.memberId == appState.currentMemberId) ...[
+
+                if (alert.isOpen) ...[
                   const SizedBox(height: 8),
                   OutlinedButton.icon(
                     onPressed: () => showAddMeasurement(context, code: code),

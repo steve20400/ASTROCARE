@@ -1,10 +1,10 @@
-// Analysis engine: thresholds, personal trend and synergies. Pure functions, no I/O.
+// Analysis engine: thresholds, personal trend and combined risks. Pure functions, no I/O.
  
 import 'dart:math' as math;
  
 import 'models.dart';
  
-/// Compares a value with the member's own recent history.
+/// Compares a value with the astronaut's own recent history.
 class TrendDetector {
   final int windowSize;
   final int minSamples;
@@ -37,16 +37,6 @@ class AnalysisEngine {
  
   const AnalysisEngine(this.rules, {this.trend = const TrendDetector()});
  
-  /// Level given by the reference ranges only.
-  AlertLevel thresholdLevel(Indicator indicator, double value, double baseline) {
-    if (indicator.relativeToBaseline) {
-      if (baseline <= 0) return AlertLevel.nominal;
-      final percent = (value - baseline) / baseline * 100;
-      return indicator.levelFor(percent);
-    }
-    return indicator.levelFor(value);
-  }
- 
   /// Rules whose conditions are all at attention or worse, under an active hazard.
   List<SynergyRule> activeSynergies(Map<String, AlertLevel> latest, List<Hazard> active) {
     final hits = <SynergyRule>[];
@@ -67,28 +57,27 @@ class AnalysisEngine {
  
   /// Full analysis of one new measurement.
   /// [history] holds the earlier values of the same indicator, oldest first.
-  /// [latest] holds the current level of the member's other indicators.
+  /// [latest] holds the current level of the other indicators.
   AnalysisResult analyze({
     required Indicator indicator,
     required double value,
     required List<double> history,
     required Map<String, AlertLevel> latest,
     required List<Hazard> activeHazards,
-    double baseline = 0,
   }) {
-
-    final byThreshold = thresholdLevel(indicator, value, baseline);
+    final byThreshold = indicator.levelFor(value);
+ 
     final z = trend.zScore(value, history);
     final byTrend = trend.isAbnormal(z) ? AlertLevel.attention : AlertLevel.nominal;
  
     final state = Map<String, AlertLevel>.from(latest);
     state[indicator.code] = maxLevel(byThreshold, byTrend);
-    final hits = activeSynergies(
-      state,
-      activeHazards,
-    ).where((r) => r.conditions.contains(indicator.code)).toList();
+    final hits = <SynergyRule>[];
     var bySynergy = AlertLevel.nominal;
-    for (final r in hits) {
+    for (final r in activeSynergies(state, activeHazards)) {
+      if (!r.conditions.contains(indicator.code)) continue;
+
+      hits.add(r);
       bySynergy = maxLevel(bySynergy, r.level);
     }
  

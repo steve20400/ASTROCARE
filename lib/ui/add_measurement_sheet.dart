@@ -23,28 +23,28 @@ void showAddMeasurement(BuildContext context, {String? code}) {
           final indicator = indicatorByCode(savedCode);
           final name = t('ind.$savedCode.name');
           final text = t('add.saved', [name, '${indicator.format(value)} ${indicator.unit}']);
-          HealthAlert? alert;
+          String? alertId;
           if (result.level != AlertLevel.nominal) {
-            for (final a in appState.openAlerts(appState.currentMemberId)) {
-              if (a.indicator == savedCode) {
-                alert = a;
+            for (final a in appState.sortedAlerts()) {
+              if (a.indicator == savedCode && a.isOpen) {
+                alertId = a.id;
                 break;
               }
             }
           }
-          final alertId = alert?.id;
+          final target = alertId;
           messenger.hideCurrentSnackBar();
           messenger.showSnackBar(
             SnackBar(
-              content: Text('$text · ${t(levelKey(result.level))}'),
+              content: Text('$text - ${t(levelKey(result.level))}'),
               duration: const Duration(seconds: 6),
-              action: alertId == null
+              action: target == null
                   ? null
                   : SnackBarAction(
                       label: t('add.view'),
                       onPressed: () => navigator.push(
                         MaterialPageRoute<void>(
-                          builder: (_) => AlertDetailPage(alertId: alertId),
+                          builder: (_) => AlertDetailPage(alertId: target),
                         ),
                       ),
                     ),
@@ -84,6 +84,15 @@ class _AddMeasurementFormState extends State<_AddMeasurementForm> {
     super.dispose();
   }
  
+  void _select(String code) {
+    setState(() {
+      _code = code;
+      _score = null;
+      _error = null;
+      _controller.clear();
+    });
+  }
+ 
   void _save() {
     final indicator = indicatorByCode(_code);
     double? value;
@@ -117,28 +126,21 @@ class _AddMeasurementFormState extends State<_AddMeasurementForm> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(t('add.title'), style: Theme.of(context).textTheme.titleLarge),
-          const SizedBox(height: 4),
-          Text(appState.currentMember.name, style: TextStyle(color: scheme.primary)),
-          const SizedBox(height: 14),
-          Text(t('add.indicator'), style: const TextStyle(fontWeight: FontWeight.w600)),
-          DropdownButton<String>(
-            value: _code,
-            isExpanded: true,
-            items: [
+          const SizedBox(height: 12),
+          Wrap(
+            spacing: 8,
+            runSpacing: 4,
+            children: [
               for (final i in kIndicators)
-                DropdownMenuItem<String>(value: i.code, child: Text(t('ind.${i.code}.name'))),
+                ChoiceChip(
+                  avatar: Icon(indicatorIcon(i.code), size: 18),
+                  label: Text(t('ind.${i.code}.name')),
+                  selected: i.code == _code,
+                  onSelected: (_) => _select(i.code),
+                ),
             ],
-            onChanged: (v) {
-              if (v == null) return;
-              setState(() {
-                _code = v;
-                _score = null;
-                _error = null;
-                _controller.clear();
-              });
-            },
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 12),
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(12),
@@ -159,9 +161,9 @@ class _AddMeasurementFormState extends State<_AddMeasurementForm> {
                       const SizedBox(height: 4),
                       Text(t('ind.$_code.how'), style: const TextStyle(height: 1.35)),
                     ],
+
                   ),
                 ),
-
               ],
             ),
           ),
@@ -174,6 +176,7 @@ class _AddMeasurementFormState extends State<_AddMeasurementForm> {
               children: [
                 for (var s = 1; s <= 5; s++)
                   ChoiceChip(
+                    showCheckmark: false,
                     label: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
                       child: Text('$s', style: const TextStyle(fontSize: 18)),
@@ -243,3 +246,4 @@ class _AddMeasurementFormState extends State<_AddMeasurementForm> {
     );
   }
 }
+

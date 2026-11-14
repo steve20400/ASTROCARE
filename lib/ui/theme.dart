@@ -48,35 +48,17 @@ IconData levelIcon(AlertLevel? level) {
  
 String levelKey(AlertLevel? level) => level == null ? 'level.nodata' : 'level.${level.name}';
  
-IconData zoneIcon(BodyZone zone) {
-  switch (zone) {
-    case BodyZone.head:
-      return Icons.psychology;
-    case BodyZone.heart:
+IconData indicatorIcon(String code) {
+  switch (code) {
+    case 'heartRate':
       return Icons.favorite;
-    case BodyZone.lungs:
-      return Icons.air;
-    case BodyZone.abdomen:
-      return Icons.restaurant;
-    case BodyZone.core:
+    case 'temperature':
       return Icons.thermostat;
-    case BodyZone.legs:
-      return Icons.accessibility_new;
-  }
-}
- 
-String hazardLetter(Hazard h) {
-  switch (h) {
-    case Hazard.radiation:
-      return 'R';
-    case Hazard.isolation:
-      return 'I';
-    case Hazard.distance:
-      return 'D';
-    case Hazard.gravity:
-      return 'G';
-    case Hazard.environment:
-
-      return 'E';
+    case 'sleepDuration':
+      return Icons.bedtime;
+    case 'mood':
+      return Icons.mood;
+    default:
+      return Icons.monitor_heart;
   }
 }

@@ -1,14 +1,12 @@
-// Main frame of the app: five tabs in a bottom navigation bar.
+// Main frame of the app: three tabs. Each tab is rebuilt whenever the state changes.
  
 import 'package:flutter/material.dart';
  
 import '../app/app_state.dart';
 import 'add_measurement_sheet.dart';
 import 'alerts_page.dart';
-import 'body_page.dart';
-import 'dashboard_page.dart';
-import 'more_page.dart';
-import 'synergy_page.dart';
+import 'home_page.dart';
+import 'settings_page.dart';
  
 class HomeShell extends StatefulWidget {
   const HomeShell({super.key});
@@ -20,73 +18,51 @@ class HomeShell extends StatefulWidget {
 class _HomeShellState extends State<HomeShell> {
   int _index = 0;
  
+  Widget _page() {
+    switch (_index) {
+      case 1:
+        return buildAlertsPage(context);
+      case 2:
+        return buildSettingsPage(context);
+      default:
+        return buildHomePage(context);
+    }
+  }
+ 
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
       animation: appState,
       builder: (context, _) {
-        final openCount = appState.openAlerts(appState.currentMemberId).length;
-        final pages = <Widget>[
-          const DashboardPage(),
-          const BodyPage(),
-          const SynergyPage(),
-          const AlertsPage(),
-          const MorePage(),
-        ];
-        final titles = [
-          t('nav.dashboard'),
-          t('nav.body'),
-          t('nav.synergies'),
-          t('nav.alerts'),
-          t('nav.more'),
-        ];
+        final openCount = appState.openAlertCount;
+        final titles = [t('nav.home'), t('nav.alerts'), t('nav.settings')];
         return Scaffold(
-          appBar: AppBar(
-            title: Text('AstroCare · ${titles[_index]}'),
-            actions: [
-              Padding(
-                padding: const EdgeInsets.only(right: 12),
-                child: Tooltip(
-                  message: t('dash.autonomous'),
-                  child: const Icon(Icons.cloud_off),
-                ),
-              ),
-            ],
-          ),
-          body: SafeArea(child: pages[_index]),
-          floatingActionButton: _index <= 1
+          appBar: AppBar(title: Text(_index == 0 ? 'AstroCare' : titles[_index])),
+          body: SafeArea(child: _page()),
+          floatingActionButton: _index == 0
               ? FloatingActionButton.extended(
                   onPressed: () => showAddMeasurement(context),
                   icon: const Icon(Icons.add),
-                  label: Text(t('dash.add')),
+                  label: Text(t('home.add')),
                 )
               : null,
           bottomNavigationBar: NavigationBar(
             selectedIndex: _index,
             onDestinationSelected: (i) => setState(() => _index = i),
             destinations: [
-              NavigationDestination(
-                icon: const Icon(Icons.dashboard_outlined),
-                label: t('nav.dashboard'),
-              ),
-              NavigationDestination(
-                icon: const Icon(Icons.accessibility_new),
-                label: t('nav.body'),
-              ),
-              NavigationDestination(
-                icon: const Icon(Icons.hub_outlined),
-                label: t('nav.synergies'),
-
-              ),
+              NavigationDestination(icon: const Icon(Icons.home_outlined), label: titles[0]),
               NavigationDestination(
                 icon: Badge(
                   isLabelVisible: openCount > 0,
                   label: Text('$openCount'),
                   child: const Icon(Icons.notifications_outlined),
                 ),
-                label: t('nav.alerts'),
+                label: titles[1],
               ),
-              NavigationDestination(icon: const Icon(Icons.more_horiz), label: t('nav.more')),
+              NavigationDestination(
+                icon: const Icon(Icons.settings_outlined),
+                label: titles[2],
+              ),
             ],
           ),
         );
