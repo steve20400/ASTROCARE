@@ -55,25 +55,32 @@ class BiometricHomeostasisRadar extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                children: [
-                  Container(
-                    width: 3,
-                    height: 14,
-                    color: AstroTheme.spaceCyan,
-                  ),
-                  const SizedBox(width: 8),
-                  const Text(
-                    'HOMEOSTASIS RADAR VECTOR',
-                    style: TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: 1.2,
-                      color: AstroTheme.textPrimary,
+              Expanded(
+                child: Row(
+                  children: [
+                    Container(
+                      width: 3,
+                      height: 14,
+                      color: AstroTheme.spaceCyan,
                     ),
-                  ),
-                ],
+                    const SizedBox(width: 8),
+                    const Flexible(
+                      child: Text(
+                        'HOMEOSTASIS RADAR VECTOR',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 1.2,
+                          color: AstroTheme.textPrimary,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
+              const SizedBox(width: 6),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
@@ -117,8 +124,11 @@ class BiometricHomeostasisRadar extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 8),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+          Wrap(
+            alignment: WrapAlignment.center,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: 6,
+            runSpacing: 2,
             children: [
               Container(
                 width: 8,
@@ -128,7 +138,6 @@ class BiometricHomeostasisRadar extends StatelessWidget {
                   shape: BoxShape.circle,
                 ),
               ),
-              const SizedBox(width: 6),
               const Text(
                 'ACTIVE BIO-EQUILIBRIUM',
                 style: TextStyle(

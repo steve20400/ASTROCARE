@@ -72,21 +72,28 @@ class VitalsGaugeCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
-                  children: [
-                    Icon(icon, size: 14, color: AstroTheme.spaceCyan),
-                    const SizedBox(width: 6),
-                    Text(
-                      title.toUpperCase(),
-                      style: const TextStyle(
-                        fontSize: 10,
-                        color: AstroTheme.textSecondary,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: 0.8,
+                Expanded(
+                  child: Row(
+                    children: [
+                      Icon(icon, size: 14, color: AstroTheme.spaceCyan),
+                      const SizedBox(width: 6),
+                      Flexible(
+                        child: Text(
+                          title.toUpperCase(),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontSize: 10,
+                            color: AstroTheme.textSecondary,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 0.8,
+                          ),
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
+                const SizedBox(width: 4),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
                   decoration: BoxDecoration(

@@ -27,12 +27,16 @@ class ProtocolsScreen extends StatelessWidget {
               child: const Icon(Icons.checklist_rtl, color: AstroTheme.spaceCyan, size: 18),
             ),
             const SizedBox(width: 10),
-            const Text(
-              'FLIGHT MEDICAL PROTOCOLS',
-              style: TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w800,
-                letterSpacing: 1.4,
+            const Expanded(
+              child: Text(
+                'FLIGHT MEDICAL PROTOCOLS',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 1.4,
+                ),
               ),
             ),
           ],

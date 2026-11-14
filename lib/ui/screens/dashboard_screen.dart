@@ -35,7 +35,8 @@ class DashboardScreen extends StatelessWidget {
               child: const Icon(Icons.satellite_alt, color: AstroTheme.spaceCyan, size: 18),
             ),
             const SizedBox(width: 10),
-            Column(
+            Expanded(
+              child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text(
@@ -49,13 +50,16 @@ class DashboardScreen extends StatelessWidget {
                 ),
                 Text(
                   '${astro.name.toUpperCase()} • SOL ${astro.missionDay} • ${astro.mission.toUpperCase()}',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     fontSize: 9.5,
                     fontFamily: 'monospace',
                     color: AstroTheme.textTertiary,
                   ),
                 ),
-              ],
+                ],
+              ),
             ),
           ],
         ),
@@ -378,29 +382,36 @@ class DashboardScreen extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                children: [
-                  Container(
-                    width: 8,
-                    height: 8,
-                    decoration: BoxDecoration(
-                      color: statusColor,
-                      shape: BoxShape.circle,
+              Expanded(
+                child: Row(
+                  children: [
+                    Container(
+                      width: 8,
+                      height: 8,
+                      decoration: BoxDecoration(
+                        color: statusColor,
+                        shape: BoxShape.circle,
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    statusTitle,
-                    style: TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: 0.8,
-                      fontFamily: 'monospace',
-                      color: statusColor,
+                    const SizedBox(width: 8),
+                    Flexible(
+                      child: Text(
+                        statusTitle,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 0.8,
+                          fontFamily: 'monospace',
+                          color: statusColor,
+                        ),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
+              const SizedBox(width: 6),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                 decoration: BoxDecoration(
@@ -437,8 +448,11 @@ class DashboardScreen extends StatelessWidget {
               borderRadius: BorderRadius.circular(6),
               border: Border.all(color: AstroTheme.borderCard),
             ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            child: Wrap(
+              alignment: WrapAlignment.spaceBetween,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              spacing: 8,
+              runSpacing: 2,
               children: [
                 const Text(
                   'MISSION ACCUMULATED DOSE:',

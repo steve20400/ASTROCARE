@@ -119,25 +119,32 @@ class _GeneSynergyHeatmapCardState extends State<GeneSynergyHeatmapCard> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                children: [
-                  Container(
-                    width: 3,
-                    height: 14,
-                    color: AstroTheme.spaceCyan,
-                  ),
-                  const SizedBox(width: 8),
-                  const Text(
-                    'NASA GENELAB OSD-288 // OMICS HEATMAP',
-                    style: TextStyle(
-                      fontSize: 10.5,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: 1.2,
-                      color: AstroTheme.textPrimary,
+              Expanded(
+                child: Row(
+                  children: [
+                    Container(
+                      width: 3,
+                      height: 14,
+                      color: AstroTheme.spaceCyan,
                     ),
-                  ),
-                ],
+                    const SizedBox(width: 8),
+                    const Flexible(
+                      child: Text(
+                        'NASA GENELAB OSD-288 // OMICS HEATMAP',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 10.5,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 1.2,
+                          color: AstroTheme.textPrimary,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
+              const SizedBox(width: 6),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                 decoration: BoxDecoration(
@@ -170,8 +177,11 @@ class _GeneSynergyHeatmapCardState extends State<GeneSynergyHeatmapCard> {
           const SizedBox(height: 12),
 
           // Filter Button
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          Wrap(
+            alignment: WrapAlignment.spaceBetween,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: 8,
+            runSpacing: 6,
             children: [
               InkWell(
                 onTap: () {
@@ -317,9 +327,10 @@ class _GeneSynergyHeatmapCardState extends State<GeneSynergyHeatmapCard> {
 
           const SizedBox(height: 10),
           // Footer citation
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: const [
+          const Wrap(
+            spacing: 12,
+            runSpacing: 2,
+            children: [
               Text(
                 'DATA SOURCE: NASA GENELAB GLDS-288 / OSD-288',
                 style: TextStyle(

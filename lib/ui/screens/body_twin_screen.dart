@@ -28,12 +28,16 @@ class BodyTwinScreen extends StatelessWidget {
               child: const Icon(Icons.accessibility_new, color: AstroTheme.spaceCyan, size: 18),
             ),
             const SizedBox(width: 10),
-            const Text(
-              'ASTRONAUT DIGITAL TWIN',
-              style: TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w800,
-                letterSpacing: 1.4,
+            const Expanded(
+              child: Text(
+                'ASTRONAUT DIGITAL TWIN',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 1.4,
+                ),
               ),
             ),
           ],
@@ -235,21 +239,28 @@ class BodyTwinScreen extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                children: [
-                  Icon(organIcon, size: 16, color: statusColor),
-                  const SizedBox(width: 8),
-                  Text(
-                    organTitle,
-                    style: TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: 1.0,
-                      color: statusColor,
+              Expanded(
+                child: Row(
+                  children: [
+                    Icon(organIcon, size: 16, color: statusColor),
+                    const SizedBox(width: 8),
+                    Flexible(
+                      child: Text(
+                        organTitle,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 1.0,
+                          color: statusColor,
+                        ),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
+              const SizedBox(width: 6),
               Text(
                 subsystemCode,
                 style: const TextStyle(

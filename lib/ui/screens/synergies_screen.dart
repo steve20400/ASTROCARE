@@ -27,13 +27,16 @@ class SynergiesScreen extends StatelessWidget {
               child: const Icon(Icons.hub, color: AstroTheme.spaceCyan, size: 18),
             ),
             const SizedBox(width: 10),
-            const Text(
+            const Expanded(
+              child: Text(
               'NASA HRP SYNERGY MATRIX',
+              overflow: TextOverflow.ellipsis,
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w800,
                 letterSpacing: 1.4,
               ),
+            ),
             ),
           ],
         ),
@@ -55,25 +58,32 @@ class SynergiesScreen extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Row(
-                      children: [
-                        Container(
-                          width: 3,
-                          height: 14,
-                          color: AstroTheme.spaceCyan,
-                        ),
-                        const SizedBox(width: 8),
-                        const Text(
-                          'NON-LINEAR RISK FORMULATION',
-                          style: TextStyle(
-                            fontSize: 10.5,
-                            fontWeight: FontWeight.w700,
-                            letterSpacing: 1.2,
-                            color: AstroTheme.textPrimary,
+                    Expanded(
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 3,
+                            height: 14,
+                            color: AstroTheme.spaceCyan,
                           ),
-                        ),
-                      ],
+                          const SizedBox(width: 8),
+                          const Flexible(
+                            child: Text(
+                              'NON-LINEAR RISK FORMULATION',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: 10.5,
+                                fontWeight: FontWeight.w700,
+                                letterSpacing: 1.2,
+                                color: AstroTheme.textPrimary,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
+                    const SizedBox(width: 6),
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                       decoration: BoxDecoration(

@@ -28,13 +28,16 @@ class MissionSyncScreen extends StatelessWidget {
               child: const Icon(Icons.sync_alt, color: AstroTheme.spaceCyan, size: 18),
             ),
             const SizedBox(width: 10),
-            const Text(
+            const Expanded(
+              child: Text(
               'DSN STORE-AND-FORWARD LINK',
+              overflow: TextOverflow.ellipsis,
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w800,
                 letterSpacing: 1.4,
               ),
+            ),
             ),
           ],
         ),
@@ -56,25 +59,32 @@ class MissionSyncScreen extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Row(
-                      children: [
-                        Container(
-                          width: 3,
-                          height: 14,
-                          color: AstroTheme.spaceCyan,
-                        ),
-                        const SizedBox(width: 8),
-                        const Text(
-                          'DEEP SPACE NETWORK 34M ARRAY',
-                          style: TextStyle(
-                            fontSize: 10.5,
-                            fontWeight: FontWeight.w700,
-                            letterSpacing: 1.2,
-                            color: AstroTheme.textPrimary,
+                    Expanded(
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 3,
+                            height: 14,
+                            color: AstroTheme.spaceCyan,
                           ),
-                        ),
-                      ],
+                          const SizedBox(width: 8),
+                          const Flexible(
+                            child: Text(
+                              'DEEP SPACE NETWORK 34M ARRAY',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: 10.5,
+                                fontWeight: FontWeight.w700,
+                                letterSpacing: 1.2,
+                                color: AstroTheme.textPrimary,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
+                    const SizedBox(width: 6),
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                       decoration: BoxDecoration(
@@ -160,8 +170,11 @@ class MissionSyncScreen extends StatelessWidget {
           const SizedBox(height: 18),
 
           // Packets Ledger
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          Wrap(
+            alignment: WrapAlignment.spaceBetween,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: 8,
+            runSpacing: 2,
             children: const [
               Text(
                 'LOCAL STORE-AND-FORWARD TELEMETRY LEDGER',
