@@ -5,6 +5,7 @@ import '../models/synergy.dart';
 import '../models/protocol.dart';
 import '../services/storage_service.dart';
 import '../services/synergy_engine.dart';
+import '../services/telemetry_source.dart';
 
 enum MissionScenario {
   nominalArtemis,
@@ -15,6 +16,11 @@ enum MissionScenario {
 
 class AstroCareProvider with ChangeNotifier {
   final OfflineStorageService _storage = OfflineStorageService();
+
+  // The clinical engine is source-agnostic: demo by default, a NASA open-data
+  // adapter can be injected later without touching the engine or the UI.
+  TelemetrySource _telemetrySource = const LocalDemoTelemetrySource();
+  TelemetrySource get telemetrySource => _telemetrySource;
 
   bool _isInitialized = false;
   bool get isInitialized => _isInitialized;
@@ -95,6 +101,15 @@ class AstroCareProvider with ChangeNotifier {
   void setSelectedOrgan(String organ) {
     _selectedOrgan = organ;
     notifyListeners();
+  }
+
+  /// Single ingress point for an external telemetry feed. The record goes
+  /// through the same pipeline as a manual entry: persistence, offline sync
+  /// queue and synergy re-evaluation.
+  Future<void> ingestFrom(TelemetrySource source) async {
+    _telemetrySource = source;
+    final record = await source.readLatest();
+    await addVitalsRecord(record);
   }
 
   void toggleLanguage() async {

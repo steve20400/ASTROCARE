@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../models/vitals.dart';
 import '../../providers/astrocare_provider.dart';
 import '../theme.dart';
+import '../responsive.dart';
 import '../widgets/vitals_gauge.dart';
 import '../widgets/vitals_chart.dart';
 import '../widgets/radar_chart.dart';
@@ -100,8 +101,11 @@ class DashboardScreen extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           children: [
             // Status & Latency Aerospace Bar
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            Wrap(
+              spacing: 8,
+              runSpacing: 6,
+              alignment: WrapAlignment.spaceBetween,
+              crossAxisAlignment: WrapCrossAlignment.center,
               children: [
                 const OfflineStatusBadge(),
                 Container(
@@ -207,7 +211,9 @@ class DashboardScreen extends StatelessWidget {
 
             // 6-channel Telemetry Grid
             GridView.count(
-              crossAxisCount: 2,
+              crossAxisCount: AstroLayout.telemetryColumns(
+                MediaQuery.of(context).size.width,
+              ),
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               childAspectRatio: 1.45,

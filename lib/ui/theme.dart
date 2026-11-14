@@ -1,42 +1,34 @@
 import 'package:flutter/material.dart';
 
 class AstroTheme {
-  // Official NASA Color Standards (NASA Insignia Blue & Pure White Identity)
-  // NASA Blue (Pantone 286): #0B3D91
-  // NASA Red (Pantone 185): #FC3D21
-  // NASA White: #FFFFFF
+  // Pure Aerospace Deep Slate (Clean, No-Gradient, Elite Ergonomics)
+  static const Color bgDark = Color(0xFF070A11);
+  static const Color surfaceElevated = Color(0xFF0D131F);
+  static const Color cardDark = Color(0xFF111A2B);
+  static const Color cardHover = Color(0xFF172338);
   
-  // NASA Aerospace Deep Navy & Midnight Cockpit Backgrounds
-  static const Color bgDark = Color(0xFF040814); // Deepest NASA Midnight Navy
-  static const Color surfaceElevated = Color(0xFF091326); // NASA Cockpit Console
-  static const Color cardDark = Color(0xFF0D1B36); // NASA Mission Card
-  static const Color cardHover = Color(0xFF142850);
+  // Hairline Precision Borders (Crisp 1px borders)
+  static const Color borderSubtle = Color(0x1AFFFFFF); // 10% white
+  static const Color borderActive = Color(0x3300E5FF); // 20% cyan
+  static const Color borderCard = Color(0xFF1E2B45);
 
-  // Hairline Precision Borders (Crisp NASA White & Blue)
-  static const Color borderSubtle = Color(0x26FFFFFF); // 15% Pure White
-  static const Color borderCard = Color(0xFF1A3360); // Crisp NASA Structural Blue
-  static const Color borderActive = Color(0xFF2563EB); // Vibrant NASA Blue
-  static const Color borderWhite = Color(0x4DFFFFFF); // 30% Pure White
-
-  // NASA Primary Blue & Signal Accents
-  static const Color nasaBlue = Color(0xFF0B3D91); // Official NASA Insignia Blue
-  static const Color nasaBlueElectric = Color(0xFF2563EB); // NASA Digital UI Blue
-  static const Color spaceCyan = Color(0xFF38BDF8); // NASA High-Visibility Cockpit Blue
-  static const Color deepSpaceBlue = Color(0xFF0A2558); // NASA Navy Deep
-  static const Color nasaRed = Color(0xFFFC3D21); // Official NASA Meatball Red
-  static const Color laserViolet = Color(0xFF818CF8); // NASA Deep Space Indigo
+  // Aerospace Signal Accents
+  static const Color spaceCyan = Color(0xFF00E5FF);
+  static const Color nasaBlue = Color(0xFF0A58CA);
+  static const Color deepSpaceBlue = Color(0xFF003882);
   static const Color hudAmber = Color(0xFFF59E0B);
+  static const Color laserViolet = Color(0xFFA855F7);
 
   // Strict Tri-State Physiological Standard (NASA Bio-Safety Standard)
-  static const Color nominalEmerald = Color(0xFF00E599); // Bio-Nominal Green
-  static const Color cautionAmber = Color(0xFFF59E0B); // Bio-Caution Amber
-  static const Color criticalCoral = Color(0xFFFC3D21); // NASA Red (Alert)
+  static const Color nominalEmerald = Color(0xFF00E599);
+  static const Color cautionAmber = Color(0xFFF59E0B);
+  static const Color criticalCoral = Color(0xFFFF453A);
 
-  // NASA White Monochromatic Hierarchy (Crisp, High-Contrast)
-  static const Color textPrimary = Color(0xFFFFFFFF); // Pure NASA White
-  static const Color textSecondary = Color(0xFFCBD5E1); // Clean Silver Slate
-  static const Color textTertiary = Color(0xFF94A3B8); // Muted Blue Gray
-  static const Color textMuted = Color(0xFF64748B); // Low-Priority Slate
+  // Monochromatic Hierarchy for Readability
+  static const Color textPrimary = Color(0xFFFFFFFF);
+  static const Color textSecondary = Color(0xFF94A3B8);
+  static const Color textTertiary = Color(0xFF64748B);
+  static const Color textMuted = Color(0xFF475569);
 
   static ThemeData get darkTheme {
     return ThemeData(
