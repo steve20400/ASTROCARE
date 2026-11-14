@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import '../../models/vitals.dart';
 import '../../providers/astrocare_provider.dart';
 import '../theme.dart';
-import '../widgets/digital_twin_painter.dart';
+import '../widgets/rotating_digital_twin.dart';
 
 class BodyTwinScreen extends StatelessWidget {
   const BodyTwinScreen({super.key});
@@ -43,11 +43,14 @@ class BodyTwinScreen extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         children: [
           // Subheader
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          Wrap(
+            spacing: 10,
+            runSpacing: 6,
+            alignment: WrapAlignment.spaceBetween,
+            crossAxisAlignment: WrapCrossAlignment.center,
             children: [
               const Text(
-                'ORTHOGONAL BIOMECHANICAL MODEL',
+                'VOLUMETRIC 360° BIOMECHANICAL MODEL',
                 style: TextStyle(
                   fontSize: 9,
                   fontWeight: FontWeight.w700,
@@ -76,8 +79,8 @@ class BodyTwinScreen extends StatelessWidget {
           ),
           const SizedBox(height: 8),
 
-          // Digital Twin Canvas
-          DigitalTwinWidget(
+          // Volumetric 360 degrees Digital Twin (rotation + scan pass)
+          RotatingDigitalTwin(
             vitals: latest,
             selectedOrgan: selectedOrgan,
             onSelectOrgan: (organ) => provider.setSelectedOrgan(organ),
