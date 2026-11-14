@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'providers/astrocare_provider.dart';
 import 'ui/theme.dart';
+import 'ui/screens/splash_screen.dart';
 import 'ui/screens/dashboard_screen.dart';
 import 'ui/screens/body_twin_screen.dart';
 import 'ui/screens/synergies_screen.dart';
@@ -21,16 +22,45 @@ void main() async {
   );
 }
 
-class AstroCareApp extends StatelessWidget {
-  const AstroCareApp({super.key});
+class AstroCareApp extends StatefulWidget {
+  final bool skipSplash;
+
+  const AstroCareApp({super.key, this.skipSplash = false});
+
+  @override
+  State<AstroCareApp> createState() => _AstroCareAppState();
+}
+
+class _AstroCareAppState extends State<AstroCareApp> {
+  late bool _showSplash;
+
+  @override
+  void initState() {
+    super.initState();
+    _showSplash = !widget.skipSplash;
+  }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'AstroCare',
+      title: 'AstroCare // NASA Deep Space Telemetry',
       debugShowCheckedModeBanner: false,
       theme: AstroTheme.darkTheme,
-      home: const MainNavigationShell(),
+      home: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 600),
+        switchInCurve: Curves.easeIn,
+        switchOutCurve: Curves.easeOut,
+        child: _showSplash
+            ? SplashScreen(
+                key: const ValueKey('splash'),
+                onComplete: () {
+                  if (mounted) {
+                    setState(() => _showSplash = false);
+                  }
+                },
+              )
+            : const MainNavigationShell(key: ValueKey('main_shell')),
+      ),
     );
   }
 }
@@ -65,6 +95,7 @@ class _MainNavigationShellState extends State<MainNavigationShell> {
       ),
       bottomNavigationBar: Container(
         decoration: const BoxDecoration(
+          color: AstroTheme.surfaceElevated,
           border: Border(
             top: BorderSide(color: AstroTheme.borderCard, width: 1.0),
           ),

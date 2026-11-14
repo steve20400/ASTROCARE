@@ -9,9 +9,10 @@ void main() {
     await tester.pumpWidget(
       ChangeNotifierProvider.value(
         value: provider,
-        child: const AstroCareApp(),
+        child: const AstroCareApp(skipSplash: true),
       ),
     );
     expect(find.byType(AstroCareApp), findsOneWidget);
+    expect(find.byType(MainNavigationShell), findsOneWidget);
   });
 }
