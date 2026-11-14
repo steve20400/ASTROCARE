@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../providers/astrocare_provider.dart';
 import '../theme.dart';
 import '../widgets/synergy_card.dart';
+import '../widgets/gene_synergy_heatmap.dart';
 
 class SynergiesScreen extends StatelessWidget {
   const SynergiesScreen({super.key});
@@ -153,6 +154,11 @@ class SynergiesScreen extends StatelessWidget {
               ],
             ),
           ),
+          const SizedBox(height: 16),
+
+          // NASA GeneLab OSD-288 Omics Molecular Heatmap Card
+          const GeneSynergyHeatmapCard(),
+
           const SizedBox(height: 16),
 
           Row(
