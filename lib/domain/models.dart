@@ -269,3 +269,72 @@ class Session {
     idTokenExpiry: DateTime.tryParse('${j['idTokenExpiry']}') ?? DateTime(2000),
   );
 }
+ 
+/// A health report kept on board until the link to the ground carries it.
+class Report {
+  final String id;
+  final int number;
+  final DateTime createdAt;
+ 
+  /// True when the app created it by itself after the waiting time.
+  final bool auto;
+ 
+  /// Number of new measurements it contains.
+  final int newCount;
+ 
+  /// The PDF file, in base 64.
+  final String pdf;
+ 
+  bool sent;
+  DateTime? sentAt;
+  int packets;
+  int resent;
+ 
+  /// Start of the SHA-256 fingerprint of the PDF.
+  String digest;
+ 
+  Report({
+    required this.id,
+    required this.number,
+    required this.createdAt,
+    required this.auto,
+    required this.newCount,
+    required this.pdf,
+    this.sent = false,
+    this.sentAt,
+    this.packets = 0,
+    this.resent = 0,
+    this.digest = '',
+  });
+ 
+  String get fileName => 'astrocare_report_${number.toString().padLeft(4, '0')}.pdf';
+ 
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'number': number,
+    'createdAt': createdAt.toIso8601String(),
+    'auto': auto,
+    'newCount': newCount,
+    'pdf': pdf,
+    'sent': sent,
+    'sentAt': sentAt?.toIso8601String(),
+    'packets': packets,
+    'resent': resent,
+    'digest': digest,
+  };
+ 
+  factory Report.fromJson(Map<String, dynamic> j) => Report(
+    id: '${j['id']}',
+    number: (j['number'] as num?)?.toInt() ?? 0,
+    createdAt: DateTime.tryParse('${j['createdAt']}') ?? DateTime.now(),
+    auto: j['auto'] == true,
+    newCount: (j['newCount'] as num?)?.toInt() ?? 0,
+    pdf: '${j['pdf'] ?? ''}',
+    sent: j['sent'] == true,
+
+    sentAt: DateTime.tryParse('${j['sentAt']}'),
+    packets: (j['packets'] as num?)?.toInt() ?? 0,
+    resent: (j['resent'] as num?)?.toInt() ?? 0,
+    digest: '${j['digest'] ?? ''}',
+  );
+}
