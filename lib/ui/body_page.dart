@@ -9,11 +9,9 @@ import 'package:flutter/material.dart';
 import '../app/app_state.dart';
 import '../domain/catalog.dart';
 import '../domain/models.dart';
-import '../models/vitals.dart';
 import 'indicator_page.dart';
 import 'theme.dart';
 import 'widgets.dart';
-import 'widgets/rotating_digital_twin.dart';
  
 // Parts of the figure. Each part has its own color.
 const int _suit = 0;
