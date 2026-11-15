@@ -16,7 +16,8 @@ Team **Falcon Health** - NASA Space Apps Challenge 2026, challenge
 - Green, orange or red status, always with an icon and a text label.
 - Alerts with step-by-step first aid, chosen from the indicator and the direction of the
   deviation, and the warning signs that require the medical officer.
-- A built-in first-aid guide, readable at any time without connection.
+- A built-in first-aid guide, readable at any time without connection. When indicators
+  are in attention or critical, it shows only the first aid that concerns them.
 - **Automatic reports**: ten minutes after the last measurement, a PDF report is created
   with the new measurements and queued for the ground. A full report can also be shared.
 - **Simulated downlink**: the queued reports cross a simulated link with the CCSDS File
@@ -38,6 +39,7 @@ Team **Falcon Health** - NASA Space Apps Challenge 2026, challenge
 2. SQL Editor: run `supabase/schema.sql` (three tables and their security policies).
 3. Authentication > Sign In / Providers: turn off "Confirm email".
 4. "Connect" button: copy the project URL and the publishable key into `lib/config.dart`.
+ 
 ## Visual identity
  
 - Colors: NASA Space Apps brand guidelines (June 2026). Blues dominate, Neon Yellow is

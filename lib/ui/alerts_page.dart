@@ -129,7 +129,6 @@ class AlertDetailPage extends StatelessWidget {
           causeText = '$causeText\n${t('syn.${rule.id}.name')}: ${t('syn.${rule.id}.risk')}';
         }
         causeText = '$causeText\n${t('ind.$code.space')}';
-        causeText = '$causeText\n${t('aid.ref')}: ${kNasaRisk[code] ?? ''}';
         var recoText = t('alert.ground');
         if (rule != null) recoText = '${t('syn.${rule.id}.advice')}\n$recoText';
  
@@ -161,8 +160,8 @@ class AlertDetailPage extends StatelessWidget {
                                 color: color,
                                 fontWeight: FontWeight.w800,
                                 fontSize: 17,
-
                               ),
+
                             ),
                             const SizedBox(height: 4),
                             Text(
@@ -246,8 +245,8 @@ class AlertDetailPage extends StatelessWidget {
                 ],
               ],
             ),
-
           ),
+
         );
       },
     );

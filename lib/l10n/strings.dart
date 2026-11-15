@@ -123,7 +123,6 @@ const Map<String, String> kEn = {
   "about.disclaimer":
       "AstroCare is a hackathon prototype. It is not a medical device and "
       "does not replace a physician.",
-  "about.resources": "NASA and partner resources",
   "about.team": "Team Falcon Health - NASA Space Apps Challenge 2026",
   "syn.behavior.name": "Low mood and short sleep in isolation",
   "syn.behavior.risk": "Higher risk for behavioral health and performance.",
@@ -161,19 +160,14 @@ const Map<String, String> kEn = {
   "ind.mood.space": "Isolation, confinement and distance from family weigh on morale.",
   "alert.reco": "Follow-up",
   "aid.title": "First aid",
-
   "aid.guide": "First-aid guide",
+
   "aid.guide.hint": "What to do, step by step. Works without connection.",
   "aid.intro":
       "For each situation the app can detect: the first actions to take, and the "
       "signs that mean you must call the medical officer.",
   "aid.urgent": "Tell the medical officer now if",
   "aid.critical": "Critical value: tell the medical officer now, then follow these steps.",
-  "aid.ref": "NASA HRP reference",
-  "aid.source":
-      "General first-aid actions, linked to the risks listed by the NASA Human "
-      "Research Program. They do not replace the medical officer or the flight "
-      "surgeons.",
   "aid.generic.steps":
       "Rest for 10 minutes.|Take a control measurement.|If the value stays unusual, "
       "tell the medical officer.",
@@ -240,13 +234,11 @@ const Map<String, String> kEn = {
   "body.reset": "Whole body",
   "body.yours": "Your last value",
   "body.details": "Details",
-  "body.inSpace": "In space, according to NASA",
   "body.none": "No indicator is tracked for this part of the body in this version.",
   "ref.title": "Health and illness thresholds",
   "ref.range": "{0} to {1}",
   "ref.below": "below {0}",
   "ref.above": "above {0}",
-
   "ref.or": "or",
   "ref.nominal": "Healthy: {0} {1}",
   "ref.attention": "Watch: {0} {1}",
@@ -254,25 +246,23 @@ const Map<String, String> kEn = {
   "zone.head.name": "Head: sleep and mood",
   "zone.chest.name": "Chest and heart",
   "zone.abdomen.name": "Abdomen: body temperature",
+
   "zone.arms.name": "Arms: muscles",
   "zone.legs.name": "Legs: bones and muscles",
-  "zone.head.nasa":
+  "zone.head.space":
       "Chronic sleep loss, constant work demands and a disturbed internal clock wear "
       "the crew down. Isolation and the distance from Earth can also weigh on mental "
       "health.",
-  "zone.chest.nasa":
+  "zone.chest.space":
       "Weightlessness changes blood circulation and the way the heart and blood "
       "vessels work, which may raise the risk of cardiovascular events.",
-  "zone.abdomen.nasa":
+  "zone.abdomen.space":
       "The stress of spaceflight changes the immune system and can wake up dormant "
       "viruses in the body. An abnormal temperature can be an early sign of "
       "infection.",
-  "zone.arms.nasa":
+  "zone.arms.space":
       "Muscles weaken when they no longer carry weight. All astronauts exercise "
       "during their mission to limit the loss of muscle strength.",
-  "zone.legs.nasa":
-      "Without gravity, bones break down and become more brittle. NASA limits this "
-      "with diet, exercise and medication.",
   "period.24h": "24 h",
   "period.7d": "7 days",
   "period.30d": "30 days",
@@ -331,7 +321,6 @@ const Map<String, String> kEn = {
   "tx.ev.refd": "File Data {0}/{1} sent again",
   "tx.ev.fin": "Finished: file complete and valid",
   "tx.ev.finbad": "Finished: file refused",
-
   "tx.ev.ackfin": "ACK: the spacecraft closes the transfer",
   "tx.log.ok":
       "Ground station: checksum correct, signature valid, report decrypted. "
@@ -342,6 +331,7 @@ const Map<String, String> kEn = {
       "replaced the older SCPS file protocol. A lost part is asked again, so the file "
       "always arrives whole.",
   "tx.sec.packet":
+
       "Each message travels in a CCSDS Space Packet (CCSDS 133.0-B) ended by a "
       "CRC-16: a damaged packet is refused.",
   "tx.sec.cipher":
@@ -361,7 +351,19 @@ const Map<String, String> kEn = {
   "tx.pdf.new": "New measurements since the last report ({0})",
   "tx.pdf.nonew": "No new measurement.",
   "tx.pdf.latest": "Latest value of each indicator",
+  "aid.source":
+      "These first-aid actions do not replace the medical officer or the flight "
+      "surgeons.",
+  "aid.intro.current":
+      "First aid for the indicators that are in attention or critical right now. "
+      "The cards are already open.",
+  "aid.show.all": "Show every situation",
+  "aid.show.current": "Show only my current situation",
+  "zone.legs.space":
+      "Without gravity, bones break down and become more brittle. Diet, exercise "
+      "and medication limit this.",
 };
+ 
 const Map<String, String> kFr = {
   "nav.home": "Accueil",
   "nav.alerts": "Alertes",
@@ -414,9 +416,9 @@ const Map<String, String> kFr = {
   "home.hello": "Bonjour, {0}",
   "home.overall": "État général",
   "home.nodata": "Pas encore mesuré",
+
   "home.start": "Enregistrez votre première mesure pour voir votre état.",
   "home.combined": "Risque combiné",
-
   "home.add": "Ajouter une mesure",
   "sync.title": "Sauvegarde en ligne",
   "sync.ok": "Toutes les données sont sauvegardées en ligne.",
@@ -478,7 +480,6 @@ const Map<String, String> kFr = {
   "about.disclaimer":
       "AstroCare est un prototype de hackathon. Ce n'est pas un dispositif "
       "médical et il ne remplace pas un médecin.",
-  "about.resources": "Ressources de la NASA et de ses partenaires",
   "about.team": "Équipe Falcon Health - NASA Space Apps Challenge 2026",
   "syn.behavior.name": "Humeur basse et sommeil court en isolement",
   "syn.behavior.risk": "Risque accru pour la santé comportementale et la performance.",
@@ -500,8 +501,8 @@ const Map<String, String> kFr = {
       "déconditionner.",
   "ind.temperature.name": "Température corporelle",
   "ind.temperature.what": "Température du corps, en degrés Celsius.",
-  "ind.temperature.how":
 
+  "ind.temperature.how":
       "Utilisez le thermomètre comme indiqué et restez immobile "
       "jusqu'au bip.",
   "ind.temperature.space":
@@ -532,11 +533,6 @@ const Map<String, String> kFr = {
   "aid.critical":
       "Valeur critique : prévenez l'officier médical tout de suite, puis suivez ces "
       "étapes.",
-  "aid.ref": "Référence NASA HRP",
-  "aid.source":
-      "Gestes généraux de premiers secours, reliés aux risques listés par le Human "
-      "Research Program de la NASA. Ils ne remplacent ni l'officier médical ni les "
-      "médecins de vol.",
   "aid.generic.steps":
       "Reposez-vous 10 minutes.|Faites une mesure de contrôle.|Si la valeur reste "
       "inhabituelle, prévenez l'officier médical.",
@@ -586,11 +582,11 @@ const Map<String, String> kFr = {
       "vous dormez moins de 5 heures depuis plusieurs nuits, vous vous endormez "
       "pendant les tâches, ou vous faites des erreurs inhabituelles.",
   "aid.sleepDuration.high.title": "Sommeil anormalement long",
-
   "aid.sleepDuration.high.steps":
       "Après une journée lourde, un long sommeil peut être une simple "
       "récupération.|Vérifiez vos autres indicateurs : température et "
       "humeur.|Exposez-vous à une lumière vive et faites de l'exercice peu après le "
+
       "réveil.|Gardez des heures fixes de coucher et de lever.",
   "aid.sleepDuration.high.urgent":
       "le long sommeil dure plusieurs jours, ou s'accompagne d'une humeur basse ou de "
@@ -615,7 +611,6 @@ const Map<String, String> kFr = {
   "body.reset": "Corps entier",
   "body.yours": "Votre dernière valeur",
   "body.details": "Détails",
-  "body.inSpace": "Dans l'espace, selon la NASA",
   "body.none": "Aucun indicateur n'est suivi pour cette partie du corps dans cette version.",
   "ref.title": "Seuils de santé et de maladie",
   "ref.range": "de {0} à {1}",
@@ -630,24 +625,21 @@ const Map<String, String> kFr = {
   "zone.abdomen.name": "Abdomen : température du corps",
   "zone.arms.name": "Bras : muscles",
   "zone.legs.name": "Jambes : os et muscles",
-  "zone.head.nasa":
+  "zone.head.space":
       "Le manque de sommeil chronique, la charge de travail constante et une horloge "
       "interne déréglée usent l'équipage. L'isolement et la distance de la Terre "
       "peuvent aussi peser sur la santé mentale.",
-  "zone.chest.nasa":
+  "zone.chest.space":
       "L'apesanteur modifie la circulation du sang et le fonctionnement du cœur et "
       "des vaisseaux, ce qui peut augmenter le risque d'accident cardiovasculaire.",
-  "zone.abdomen.nasa":
+  "zone.abdomen.space":
       "Le stress du vol spatial modifie le système immunitaire et peut réveiller des "
       "virus dormants dans le corps. Une température anormale peut être un premier "
       "signe d'infection.",
-  "zone.arms.nasa":
+  "zone.arms.space":
       "Les muscles s'affaiblissent quand ils ne portent plus de poids. Tous les "
       "astronautes font de l'exercice pendant leur mission pour limiter la perte de "
       "force.",
-  "zone.legs.nasa":
-      "Sans gravité, les os se dégradent et deviennent plus fragiles. La NASA limite "
-      "cela par l'alimentation, l'exercice et les médicaments.",
   "period.24h": "24 h",
   "period.7d": "7 jours",
   "period.30d": "30 jours",
@@ -671,7 +663,6 @@ const Map<String, String> kFr = {
   "tx.status.down": "Liaison coupée : {0} rapport(s) restent à bord jusqu'à son retour.",
   "tx.status.idle": "Liaison ouverte. Rien à envoyer.",
   "tx.status.sending": "Envoi du rapport {0}. {1}",
-
   "tx.number": "n° {0}",
   "tx.auto.title": "Rapport automatique",
   "tx.auto.text":
@@ -680,6 +671,7 @@ const Map<String, String> kFr = {
       "dernière valeur de chaque indicateur, puis le met dans la file d'attente pour "
       "le sol.",
   "tx.auto.delay": "Attente après la dernière mesure",
+
   "tx.delay.30": "30 s (démo)",
   "tx.delay.600": "10 min",
   "tx.delay.3600": "1 h",
@@ -739,4 +731,15 @@ const Map<String, String> kFr = {
   "tx.pdf.new": "Nouvelles mesures depuis le dernier rapport ({0})",
   "tx.pdf.nonew": "Aucune nouvelle mesure.",
   "tx.pdf.latest": "Dernière valeur de chaque indicateur",
+  "aid.source":
+      "Ces gestes de premiers secours ne remplacent ni l'officier médical ni les "
+      "médecins de vol.",
+  "aid.intro.current":
+      "Premiers secours pour les indicateurs qui sont en attention ou critiques en "
+      "ce moment. Les fiches sont déjà ouvertes.",
+  "aid.show.all": "Voir toutes les situations",
+  "aid.show.current": "Voir seulement ma situation actuelle",
+  "zone.legs.space":
+      "Sans gravité, les os se dégradent et deviennent plus fragiles. L'alimentation, "
+      "l'exercice et les médicaments limitent cela.",
 };

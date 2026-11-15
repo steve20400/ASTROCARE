@@ -1,6 +1,6 @@
 // Body tab: a human figure in real 3D. One finger turns it in every direction, two
 // fingers zoom and move it, and touching a part of the body opens its information:
-// health and illness thresholds, the NASA risk it relates to, and the astronaut's own
+// health and illness thresholds, what spaceflight does to it, and the astronaut's own
 // last values with their color code.
 // The figure is a mesh of triangles built and lit by this file: no 3D model file, no
 // image, no extra package, no network.
@@ -772,7 +772,7 @@ class _BodyPageState extends State<BodyPage> with TickerProviderStateMixin {
   }
 }
  
-/// Information of the touched zone: NASA reference, thresholds, own values.
+/// Information of the touched zone: own values, thresholds, effect of spaceflight.
 class _ZonePanel extends StatelessWidget {
   final String zone;
   final AlertLevel? level;
@@ -784,7 +784,6 @@ class _ZonePanel extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     final codes = kBodyZones[zone] ?? const <String>[];
-    final risks = kZoneRisks[zone] ?? const <String>[];
     return Card(
       margin: EdgeInsets.zero,
       clipBehavior: Clip.antiAlias,
@@ -823,17 +822,11 @@ class _ZonePanel extends StatelessWidget {
                       child: Text(t('body.none'), style: const TextStyle(height: 1.35)),
                     ),
                   Text(
-                    t('body.inSpace'),
+                    t('ind.space'),
                     style: const TextStyle(fontWeight: FontWeight.w700),
                   ),
                   const SizedBox(height: 4),
-                  Text(t('zone.$zone.nasa'), style: const TextStyle(height: 1.35)),
-                  const SizedBox(height: 6),
-                  for (final risk in risks)
-                    Text(
-                      '${t('aid.ref')}: $risk',
-                      style: TextStyle(fontSize: 12.5, color: scheme.onSurfaceVariant),
-                    ),
+                  Text(t('zone.$zone.space'), style: const TextStyle(height: 1.35)),
                 ],
               ),
             ),
@@ -841,15 +834,14 @@ class _ZonePanel extends StatelessWidget {
         ),
       ),
     );
-
   }
 }
+ 
 /// One indicator of the zone: own last value, range bar, thresholds, actions.
 class _IndicatorBlock extends StatelessWidget {
   final String code;
- 
   const _IndicatorBlock({required this.code});
- 
+
   @override
   Widget build(BuildContext context) {
     final i = indicatorByCode(code);
@@ -926,7 +918,6 @@ class _IndicatorBlock extends StatelessWidget {
           const SizedBox(height: 8),
           _RangeBar(indicator: i, value: last?.value),
           const SizedBox(height: 8),
-
           Text(t('ref.title'), style: const TextStyle(fontWeight: FontWeight.w700)),
           const SizedBox(height: 2),
           line(
@@ -935,6 +926,7 @@ class _IndicatorBlock extends StatelessWidget {
               t('ref.range', [i.format(i.nominalLow), i.format(i.nominalHigh)]),
               i.unit,
             ]),
+
           ),
           if (watch.isNotEmpty)
             line(AlertLevel.attention, t('ref.attention', [watch.join(or), i.unit])),
@@ -970,7 +962,6 @@ class _IndicatorBlock extends StatelessWidget {
     );
   }
 }
- 
 /// Horizontal bar of the ranges (critical, watch, healthy, watch, critical) with a
 /// pointer on the astronaut's own value.
 class _RangeBar extends StatelessWidget {
@@ -1011,7 +1002,6 @@ class _RangeBar extends StatelessWidget {
                   child: Row(
                     children: [
                       for (final b in bands)
-
                         if ((b[0] as double) > 0)
                           Expanded(
                             flex: ((b[0] as double) / (hi - lo) * 1000).round().clamp(1, 1000),
@@ -1021,6 +1011,7 @@ class _RangeBar extends StatelessWidget {
                   ),
                 ),
               ),
+
               if (at != null)
                 Positioned(
                   left: (at - 12).clamp(0.0, width - 24),
