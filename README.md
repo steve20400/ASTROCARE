@@ -18,16 +18,15 @@ Team **Falcon Health** - NASA Space Apps Challenge 2026, challenge
 ## Architecture
  
 - Local database (on the device): source of truth, used at all times.
-- Online database (Firebase Authentication + Cloud Firestore): accounts and backup only.
+- Online database (Supabase: accounts + PostgreSQL): sign-in and backup only.
 - The analysis (thresholds, personal trend, combined risks) runs on the device.
  
-## Firebase setup (once)
+## Supabase setup (once)
  
-1. Create a project at https://console.firebase.google.com
-2. Authentication > Sign-in method: enable **Email/Password**.
-3. Firestore Database: create the database, then paste `firestore.rules` in the Rules tab.
-4. Project settings > General: copy the **Project ID** and the **Web API key**
-   into `lib/config.dart`.
+1. Create a project at https://supabase.com
+2. SQL Editor: run `supabase/schema.sql` (three tables and their security policies).
+3. Authentication > Sign In / Providers: turn off "Confirm email".
+4. "Connect" button: copy the project URL and the publishable key into `lib/config.dart`.
  
 ## Build
  

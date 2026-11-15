@@ -120,15 +120,16 @@ class AppState extends ChangeNotifier {
   /// Signs in with the online account. Needs the internet: do it before the mission.
   Future<void> signIn(String email, String password) async {
     final auth = await _remote.signIn(email.trim(), password);
-    final profile = await _remote.getDocument('users/${auth.uid}', auth.idToken);
+    final rows = await _remote.select('profiles', 'id', auth.uid, auth.accessToken);
+    final profile = rows.isEmpty ? const <String, dynamic>{} : rows.first;
     await _open(
       Session(
         uid: auth.uid,
         email: email.trim(),
-        name: '${profile?['name'] ?? ''}',
-        role: '${profile?['role'] ?? ''}',
+        name: '${profile['name'] ?? ''}',
+        role: '${profile['role'] ?? ''}',
         refreshToken: auth.refreshToken,
-        idToken: auth.idToken,
+        idToken: auth.accessToken,
         idTokenExpiry: auth.expiry,
       ),
     );
@@ -138,12 +139,12 @@ class AppState extends ChangeNotifier {
   /// Creates the online account and the astronaut profile.
   Future<void> signUp(String name, String role, String email, String password) async {
     final auth = await _remote.signUp(email.trim(), password);
-    await _remote.setDocument('users/${auth.uid}', {
+    await _remote.upsert('profiles', {
+      'id': auth.uid,
       'name': name.trim(),
       'role': role.trim(),
       'email': email.trim(),
-      'createdAt': DateTime.now(),
-    }, auth.idToken);
+    }, auth.accessToken);
     await _open(
       Session(
         uid: auth.uid,
@@ -151,12 +152,11 @@ class AppState extends ChangeNotifier {
         name: name.trim(),
         role: role.trim(),
         refreshToken: auth.refreshToken,
-        idToken: auth.idToken,
+        idToken: auth.accessToken,
         idTokenExpiry: auth.expiry,
       ),
     );
   }
- 
   Future<void> _open(Session s) async {
     session = s;
     await _loadUser(s.uid);
@@ -184,7 +184,7 @@ class AppState extends ChangeNotifier {
       return s.idToken;
     }
     final auth = await _remote.refresh(s.refreshToken);
-    s.idToken = auth.idToken;
+    s.idToken = auth.accessToken;
     s.refreshToken = auth.refreshToken;
     s.idTokenExpiry = auth.expiry;
     await _saveDevice();
@@ -202,22 +202,13 @@ class AppState extends ChangeNotifier {
     if (s == null) return;
     try {
       final token = await _idToken();
-      final remoteMeasurements = await _remote.listDocuments(
-        'users/${s.uid}/measurements',
-        token,
-      );
       final known = {for (final m in measurements) m.id};
-      for (final doc in remoteMeasurements) {
-        if (known.contains(doc['id'])) continue;
-        doc['synced'] = true;
-        measurements.add(Measurement.fromJson(doc));
+      for (final row in await _remote.select('measurements', 'user_id', s.uid, token)) {
+        if (!known.contains('${row['id']}')) measurements.add(Measurement.fromRemote(row));
       }
-      final remoteAlerts = await _remote.listDocuments('users/${s.uid}/alerts', token);
       final knownAlerts = {for (final a in alerts) a.id};
-      for (final doc in remoteAlerts) {
-        if (knownAlerts.contains(doc['id'])) continue;
-        doc['synced'] = true;
-        alerts.add(HealthAlert.fromJson(doc));
+      for (final row in await _remote.select('alerts', 'user_id', s.uid, token)) {
+        if (!knownAlerts.contains('${row['id']}')) alerts.add(HealthAlert.fromRemote(row));
       }
       lastSyncFailed = false;
       lastSyncAt = DateTime.now();
@@ -238,15 +229,14 @@ class AppState extends ChangeNotifier {
     try {
       final token = await _idToken();
       for (final m in measurements.where((m) => !m.synced).toList()) {
-        await _remote.setDocument('users/${s.uid}/measurements/${m.id}', m.toRemote(), token);
+        await _remote.upsert('measurements', m.toRemote(s.uid), token);
         m.synced = true;
       }
       for (final a in alerts.where((a) => !a.synced).toList()) {
-        await _remote.setDocument('users/${s.uid}/alerts/${a.id}', a.toRemote(), token);
+        await _remote.upsert('alerts', a.toRemote(s.uid), token);
         a.synced = true;
       }
       lastSyncFailed = false;
-
       lastSyncAt = DateTime.now();
     } on RemoteException {
       lastSyncFailed = true;
@@ -256,7 +246,7 @@ class AppState extends ChangeNotifier {
     syncing = false;
     _changed();
   }
- 
+
   // ------------------------------------------------------------------- queries
  
   List<Hazard> get activeHazards => activeHazardsOf(environment);
@@ -331,7 +321,7 @@ class AppState extends ChangeNotifier {
     final indicator = indicatorByCode(code);
     final previous = history(code).map((m) => m.value).toList();
     final others = latestLevels()..remove(code);
-
+ 
     final measurement = Measurement(
       id: _newId('m'),
       indicator: code,
@@ -341,6 +331,7 @@ class AppState extends ChangeNotifier {
     measurements.add(measurement);
  
     final result = _engine.analyze(
+
       indicator: indicator,
       value: value,
       history: previous,
@@ -400,13 +391,13 @@ class AppState extends ChangeNotifier {
     environment = value;
     _changed();
   }
+ 
   // -------------------------------------------------------------------- report
  
   String _two(int n) => n < 10 ? '0$n' : '$n';
  
   String formatDate(DateTime d) =>
       '${_two(d.day)}/${_two(d.month)}/${d.year} ${_two(d.hour)}:${_two(d.minute)}';
- 
   /// Health report as a PDF file, built on the device without any network.
   Uint8List buildReportPdf() {
     final s = session;
@@ -416,7 +407,6 @@ class AppState extends ChangeNotifier {
       PdfLine('${t('report.astronaut')}: ${s?.name ?? ''} (${s?.role ?? ''})'),
       PdfLine('${t('report.account')}: ${s?.email ?? ''}'),
       PdfLine('${t('settings.environment')}: ${t('env.${environment.name}')}'),
-
       PdfLine('${t('report.generated')}: ${formatDate(DateTime.now())}'),
       const PdfLine(''),
     ];
@@ -426,6 +416,7 @@ class AppState extends ChangeNotifier {
         '${t('home.overall')}: ${t(overall == null ? 'level.nodata' : 'level.${overall.name}')}',
         size: 13,
         bold: true,
+
       ),
     );
     for (final r in activeSynergies()) {
