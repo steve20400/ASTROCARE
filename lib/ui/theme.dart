@@ -107,7 +107,11 @@ bool isDark(BuildContext context) => Theme.of(context).brightness == Brightness.
 /// Status color. Null level means "no data" and gives a neutral grey.
 /// Each color keeps a contrast of at least 4.5:1 with its background.
 Color levelColor(BuildContext context, AlertLevel? level) {
-  final dark = isDark(context);
+  return levelColorFor(isDark(context), level);
+}
+ 
+/// Same colors, for a place whose background does not follow the theme.
+Color levelColorFor(bool dark, AlertLevel? level) {
   switch (level) {
     case AlertLevel.nominal:
       return dark ? const Color(0xFF6FDC8C) : const Color(0xFF1B7A33);

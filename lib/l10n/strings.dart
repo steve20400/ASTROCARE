@@ -233,10 +233,20 @@ const Map<String, String> kEn = {
       "your mood is at 1, it stays low for several days, you lose interest in "
       "everything, or you think about harming yourself. Also ask for a private "
       "conference with the ground team.",
+  "nav.body": "Body",
+  "body.hint": "Slide to turn. Touch a zone.",
+  "body.spin": "Automatic rotation",
+  "zone.head.short": "Head",
+  "zone.heart.short": "Heart",
+  "zone.body.short": "Body",
+  "zone.head.name": "Head: sleep and mood",
+  "zone.heart.name": "Heart",
+  "zone.body.name": "Whole body: temperature",
 };
  
 const Map<String, String> kFr = {
   "nav.home": "Accueil",
+
   "nav.alerts": "Alertes",
   "nav.settings": "Réglages",
   "level.nominal": "Nominal",
@@ -246,7 +256,6 @@ const Map<String, String> kFr = {
   "status.active": "Active",
   "status.acknowledged": "Acquittée",
   "status.resolved": "Résolue",
-
   "cause.threshold": "La valeur est en dehors de sa plage de référence.",
   "cause.trend": "La valeur s'écarte beaucoup de vos valeurs habituelles.",
   "cause.synergy": "Deux indicateurs sont dégradés en même temps.",
@@ -322,6 +331,7 @@ const Map<String, String> kFr = {
   "range.nominal": "Nominal : de {0} à {1} {2}",
   "range.note": "Valeurs indicatives pour un adulte en bonne santé sur Terre.",
   "alerts.none": "Aucune alerte.",
+
   "alerts.open": "Alertes ouvertes",
   "alerts.past": "Alertes résolues",
   "alert.value": "Valeur mesurée",
@@ -331,7 +341,6 @@ const Map<String, String> kFr = {
   "alert.control": "Faire une mesure de contrôle",
   "alert.ground": "Mentionnez-le dans votre prochain rapport aux médecins de vol.",
   "settings.profile": "Mon profil",
-
   "settings.language": "Langue",
   "settings.theme": "Thème sombre",
   "settings.environment": "Environnement de mission",
@@ -407,6 +416,7 @@ const Map<String, String> kFr = {
       "Valeur critique : prévenez l'officier médical tout de suite, puis suivez ces "
       "étapes.",
   "aid.ref": "Référence NASA HRP",
+
   "aid.source":
       "Gestes généraux de premiers secours, reliés aux risques listés par le Human "
       "Research Program de la NASA. Ils ne remplacent ni l'officier médical ni les "
@@ -416,7 +426,6 @@ const Map<String, String> kFr = {
       "inhabituelle, prévenez l'officier médical.",
   "aid.heartRate.high.title": "Cœur rapide au repos",
   "aid.heartRate.high.steps":
-
       "Arrêtez tout effort et restez immobile.|Respirez lentement pendant 5 minutes : "
       "inspirez 4 secondes, expirez 6 secondes.|Buvez de l'eau.|Évitez le café et les "
       "autres excitants.|Mesurez à nouveau après 10 minutes.",
@@ -479,4 +488,13 @@ const Map<String, String> kFr = {
       "votre humeur est à 1, elle reste basse plusieurs jours, vous perdez l'intérêt "
       "pour tout, ou vous pensez à vous faire du mal. Demandez aussi une conférence "
       "privée avec l'équipe au sol.",
+  "nav.body": "Corps",
+  "body.hint": "Glissez pour tourner. Touchez une zone.",
+  "body.spin": "Rotation automatique",
+  "zone.head.short": "Tête",
+  "zone.heart.short": "Cœur",
+  "zone.body.short": "Corps",
+  "zone.head.name": "Tête : sommeil et humeur",
+  "zone.heart.name": "Cœur",
+  "zone.body.name": "Corps entier : température",
 };
