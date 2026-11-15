@@ -12,22 +12,6 @@ import 'theme.dart';
 import 'transmission_page.dart';
 import 'widgets.dart';
  
-const List<List<String>> _resources = [
-  ['NASA HRP - 5 Hazards of Human Spaceflight', 'https://www.nasa.gov/hrp/hazards/'],
-  ['NASA HRP - Risks of Human Spaceflight', 'https://www.nasa.gov/hrp/risks/'],
-  ['NASA - Ongoing HRP Research in Space', 'https://www.nasa.gov/hrp/ongoing-hrp-research/'],
-  [
-    'CSA - Monitoring Radiation for Astronaut Health',
-    'https://www.asc-csa.gc.ca/eng/news/articles/2026/'
-        '2026-02-26-monitoring-radiation-astronaut-health.asp',
-  ],
-  [
-    'CSA - Why Do We Conduct Science Experiments in Space?',
-    'https://www.asc-csa.gc.ca/eng/iss/science/'
-        'why-do-we-conduct-science-experiments-in-space.asp',
-  ],
-];
- 
 /// Builds the PDF on the device and hands it to the system share sheet, so it can be
 /// sent to the ground through whatever channel the mission uses.
 Future<void> _shareReport(BuildContext context) async {
@@ -76,9 +60,9 @@ void _confirmSignOut(BuildContext context) {
         ),
       ],
     ),
-
   );
 }
+ 
 Widget buildSettingsPage(BuildContext context) {
   final scheme = Theme.of(context).colorScheme;
   final session = appState.session;
@@ -92,6 +76,7 @@ Widget buildSettingsPage(BuildContext context) {
   } else if (pending == 0) {
     syncText = t('sync.ok');
     syncIcon = Icons.cloud_done_outlined;
+
   } else {
     syncText = t('sync.pending', [pending]);
     syncIcon = Icons.phone_android;
@@ -161,7 +146,6 @@ Widget buildSettingsPage(BuildContext context) {
                 ],
               ),
               if (lastSync != null) ...[
-
                 const SizedBox(height: 6),
                 Text(
                   t('sync.last', [appState.formatDate(lastSync)]),
@@ -177,6 +161,7 @@ Widget buildSettingsPage(BuildContext context) {
                 OutlinedButton.icon(
                   onPressed: appState.syncing ? null : () => appState.sync(),
                   icon: const Icon(Icons.sync),
+
                   label: Text(t('sync.now')),
                 ),
               ],
@@ -246,25 +231,11 @@ Widget buildSettingsPage(BuildContext context) {
                 borderRadius: BorderRadius.circular(14),
               ),
               child: const Center(child: AppLogo(height: 84)),
-
             ),
             const SizedBox(height: 12),
             Text(t('about.team'), style: const TextStyle(fontWeight: FontWeight.w700)),
             const SizedBox(height: 8),
             Text(t('about.disclaimer'), style: const TextStyle(height: 1.35)),
-            const Divider(height: 24),
-            Text(t('about.resources'), style: const TextStyle(fontWeight: FontWeight.w700)),
-            for (final r in _resources)
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 4),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(r[0], style: const TextStyle(fontSize: 13)),
-                    SelectableText(r[1], style: TextStyle(fontSize: 12, color: scheme.primary)),
-                  ],
-                ),
-              ),
           ],
         ),
       ),
@@ -275,6 +246,7 @@ Widget buildSettingsPage(BuildContext context) {
         label: Padding(
           padding: const EdgeInsets.symmetric(vertical: 12),
           child: Text(t('settings.logout'), style: TextStyle(color: scheme.error)),
+
         ),
       ),
     ],

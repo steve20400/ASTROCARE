@@ -103,7 +103,6 @@ void main() {
           expect(translate(lang, '$key.$part'), isNot('$key.$part'));
         }
       }
-      expect(kNasaRisk[c[0]], isNotNull);
     }
     final heart = indicatorByCode('heartRate');
     expect(aidSide(heart, 130), 'high');
@@ -120,7 +119,6 @@ void main() {
       expect(tester.takeException(), isNull);
     }
   });
- 
   testWidgets('the 3D figure draws, turns, zooms and opens the touched part', (tester) async {
     tester.view.physicalSize = const Size(400, 720);
     tester.view.devicePixelRatio = 1;
@@ -161,9 +159,9 @@ void main() {
       Measurement(
         id: 't2',
         indicator: 'heartRate',
-
         value: 80,
         at: now.subtract(const Duration(days: 3)),
+
       ),
       Measurement(
         id: 't3',
@@ -246,8 +244,9 @@ void main() {
     expect(packet[0] << 8 | packet[1], kApid);
     packet[8] ^= 0x01;
     expect(openSpacePacket(packet), isNull);
-
+ 
     // The ground refuses a file signed with another key, and cannot read it.
+
     final sealed = seal(key, nonce, report);
     expect(unseal(key, sealed[0], sealed[1]), report);
     expect(unseal([for (var i = 0; i < 32; i++) i], sealed[0], sealed[1]), isNull);
@@ -299,4 +298,38 @@ void main() {
     appState.reports.clear();
     await tester.pumpWidget(const SizedBox());
   });
+ 
+  testWidgets('the first-aid guide shows only what concerns the current state', (tester) async {
+    tester.view.physicalSize = const Size(420, 1600);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    addTearDown(appState.measurements.clear);
+    await tester.pumpWidget(MaterialApp(theme: buildTheme(false), home: const FirstAidPage()));
+    // Nothing measured: every situation is listed.
+    expect(find.text('Low mood'), findsOneWidget);
+    expect(find.text('Fast heart rate at rest'), findsOneWidget);
+ 
+    final now = DateTime.now();
+    appState.measurements.addAll([
+      Measurement(id: 'f1', indicator: 'heartRate', value: 130, at: now),
+      Measurement(id: 'f2', indicator: 'mood', value: 4, at: now),
+      Measurement(id: 'f3', indicator: 'temperature', value: 36.8, at: now),
+    ]);
+    expect(currentAidCases().length, 1);
+    await tester.pumpWidget(const SizedBox());
+    await tester.pumpWidget(MaterialApp(theme: buildTheme(false), home: const FirstAidPage()));
+    await tester.pump(const Duration(milliseconds: 400));
+    // Only the heart is critical: its card is there, already open; the others are not.
+    expect(find.text('Fast heart rate at rest'), findsOneWidget);
+    expect(find.text('Drink water.'), findsOneWidget);
+    expect(find.text('Low mood'), findsNothing);
+    expect(find.text('Fever or overheating'), findsNothing);
+    expect(find.textContaining('NASA'), findsNothing);
+ 
+    await tester.tap(find.text('Show every situation'));
+    await tester.pump(const Duration(milliseconds: 400));
+    expect(find.text('Low mood'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
 }

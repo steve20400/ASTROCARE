@@ -105,35 +105,13 @@ const List<SynergyRule> kSynergyRules = [
 ];
  
 /// Zones of the 3D figure, and the indicators carried by each zone.
-/// Arms and legs carry no indicator in this version: they only show NASA information.
+/// Arms and legs carry no indicator in this version: they only show an explanation.
 const Map<String, List<String>> kBodyZones = {
   'head': ['sleepDuration', 'mood'],
   'chest': ['heartRate'],
   'abdomen': ['temperature'],
   'arms': [],
   'legs': [],
-};
- 
-/// NASA Human Research Program risks each zone relates to.
-/// Official names, from https://www.nasa.gov/hrp/risks/
-const Map<String, List<String>> kZoneRisks = {
-  'head': [
-    'Risk of Inadequate Sleep and Irregular Schedules',
-    'Risk of Behavioral Changes and Psychiatric Disorders',
-  ],
-  'chest': ['Risk of Cardiovascular Adaptations'],
-  'abdomen': ['Risk of Altered Immune System Responses'],
-  'arms': ['Risk of Reduced Cardiorespiratory and Musculoskeletal Fitness'],
-  'legs': ['Risk of Spaceflight-Induced Bone Changes'],
-};
- 
-/// NASA Human Research Program risk each indicator relates to.
-/// Official names, from https://www.nasa.gov/hrp/risks/
-const Map<String, String> kNasaRisk = {
-  'heartRate': 'Risk of Cardiovascular Adaptations',
-  'temperature': 'Risk of Altered Immune System Responses',
-  'sleepDuration': 'Risk of Inadequate Sleep and Irregular Schedules',
-  'mood': 'Risk of Behavioral Changes and Psychiatric Disorders',
 };
  
 /// First-aid situations of the built-in guide: indicator code, then side.
@@ -161,4 +139,3 @@ SynergyRule? synergyById(String id) {
   }
   return null;
 }
-
