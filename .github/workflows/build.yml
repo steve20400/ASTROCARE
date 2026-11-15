@@ -1,72 +1,111 @@
 name: Build AstroCare APK
- 
+
 on:
   push:
     branches: [main]
   workflow_dispatch:
- 
+
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
     steps:
-      - uses: actions/checkout@v4
- 
-      - uses: actions/setup-java@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: "17"
- 
-      - uses: actions/setup-python@v5
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
           python-version: "3.12"
- 
-      - uses: subosito/flutter-action@v2
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
         with:
           channel: stable
           cache: true
- 
+
       - name: Generate the Android project files that are missing
-        run: flutter create --platforms=android --org org.falconhealth --project-name astrocare .
- 
+        run: |
+          if [ ! -d "android" ]; then
+            flutter create --platforms=android --org org.falconhealth --project-name astrocare .
+          fi
+
       - name: Allow internet access (sign-in and online backup)
         run: >-
           grep -q android.permission.INTERNET android/app/src/main/AndroidManifest.xml ||
           sed -i
           's|<application|<uses-permission android:name="android.permission.INTERNET"/><application|'
           android/app/src/main/AndroidManifest.xml
- 
+
       - name: Show the app name with its capital letters
         run: >-
           sed -i
           's|android:label="astrocare"|android:label="AstroCare"|'
           android/app/src/main/AndroidManifest.xml
- 
+
       - name: Install the image library used to build the icon
         run: pip install pillow
         continue-on-error: true
- 
+
       - name: Use the team logo as the app icon
         run: python tool/make_icon.py
         continue-on-error: true
- 
+
       - name: Download the brand font
         run: bash tool/get_fonts.sh
         continue-on-error: true
- 
+
+      - name: Configure Keystore for seamless updates
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          if [ -n "$KEYSTORE_BASE64" ]; then
+            echo "$KEYSTORE_BASE64" | base64 --decode > android/app/astrocare-release.jks
+            cat <<EOF > android/key.properties
+            storePassword=$KEYSTORE_PASSWORD
+            keyPassword=$KEY_PASSWORD
+            keyAlias=$KEY_ALIAS
+            storeFile=astrocare-release.jks
+            EOF
+            echo "Keystore configured for seamless updates."
+          else
+            echo "No keystore secret found - building with debug signing."
+          fi
+
       - name: Remove the default template test
         run: rm -f test/widget_test.dart
- 
+
       - name: Get dependencies
         run: flutter pub get
- 
+
       - name: Run unit tests
         run: flutter test
         continue-on-error: true
- 
-      - name: Build release APK
-        run: flutter build apk --release
- 
-      - uses: actions/upload-artifact@v4
+
+      - name: Build release APK (auto-incremented versionCode)
+        run: flutter build apk --release --build-number=${{ github.run_number }}
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
         with:
-          name: astrocare-apk
+          name: astrocare-apk-v1.0.${{ github.run_number }}
           path: build/app/outputs/flutter-apk/app-release.apk
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v1.0.${{ github.run_number }}
+          name: AstroCare v1.0.${{ github.run_number }}
+          files: build/app/outputs/flutter-apk/app-release.apk
+          generate_release_notes: true
