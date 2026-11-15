@@ -5,9 +5,11 @@ import 'package:flutter/material.dart';
 import '../app/app_state.dart';
 import '../domain/catalog.dart';
 import '../domain/models.dart';
+import '../models/vitals.dart';
 import 'indicator_page.dart';
 import 'theme.dart';
 import 'widgets.dart';
+import 'widgets/rotating_digital_twin.dart';
  
 class _Spot {
   final BodyZone zone;
@@ -68,9 +70,36 @@ void _openZone(BuildContext context, BodyZone zone) {
   );
 }
  
-class BodyPage extends StatelessWidget {
+class BodyPage extends StatefulWidget {
   const BodyPage({super.key});
  
+  @override
+  State<BodyPage> createState() => _BodyPageState();
+}
+
+class _BodyPageState extends State<BodyPage> {
+  bool _use360 = true;
+  String _selectedOrgan = 'heart';
+
+  VitalsRecord _buildVitals(String memberId) {
+    double val(String id, double fallback) {
+      final list = appState.historyFor(memberId, id);
+      return list.isNotEmpty ? list.last.value : fallback;
+    }
+    return VitalsRecord(
+      timestamp: DateTime.now(),
+      heartRate: val('heart_rate', 72),
+      systolicBp: val('systolic_bp', 118),
+      diastolicBp: val('diastolic_bp', 76),
+      spo2: val('spo2', 98),
+      temperature: val('temperature', 36.8),
+      bloodSugar: val('blood_sugar', 95),
+      sleepHours: val('sleep_hours', 7.5),
+      radiationMsv: 0.42,
+      moodScore: val('mood', 8).round(),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final memberId = appState.currentMemberId;
@@ -79,11 +108,34 @@ class BodyPage extends StatelessWidget {
 
       padding: const EdgeInsets.fromLTRB(12, 12, 12, 96),
       children: [
-        Text(t('body.title'), style: Theme.of(context).textTheme.titleMedium),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(t('body.title'), style: Theme.of(context).textTheme.titleMedium),
+            SegmentedButton<bool>(
+              segments: const [
+                ButtonSegment(value: true, label: Text('360°')),
+                ButtonSegment(value: false, label: Text('2D')),
+              ],
+              selected: {_use360},
+              onSelectionChanged: (v) => setState(() => _use360 = v.first),
+            ),
+          ],
+        ),
         const SizedBox(height: 2),
         Text('${appState.currentMember.name} · ${t('body.hint')}'),
         const SizedBox(height: 8),
-        Center(
+        if (_use360)
+          SizedBox(
+            height: 430,
+            child: RotatingDigitalTwin(
+              vitals: _buildVitals(memberId),
+              selectedOrgan: _selectedOrgan,
+              onSelectOrgan: (organ) => setState(() => _selectedOrgan = organ),
+            ),
+          )
+        else
+          Center(
           child: GestureDetector(
             onTapUp: (details) {
               final p = details.localPosition;
