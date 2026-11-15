@@ -8,6 +8,7 @@ import 'package:share_plus/share_plus.dart';
  
 import '../app/app_state.dart';
 import '../domain/models.dart';
+import 'theme.dart';
 import 'widgets.dart';
  
 const List<List<String>> _resources = [
@@ -75,8 +76,8 @@ void _confirmSignOut(BuildContext context) {
       ],
     ),
   );
-}
 
+}
 Widget buildSettingsPage(BuildContext context) {
   final scheme = Theme.of(context).colorScheme;
   final session = appState.session;
@@ -160,8 +161,8 @@ Widget buildSettingsPage(BuildContext context) {
                 OutlinedButton.icon(
                   onPressed: appState.syncing ? null : () => appState.sync(),
                   icon: const Icon(Icons.sync),
-                  label: Text(t('sync.now')),
 
+                  label: Text(t('sync.now')),
                 ),
               ],
             ],
@@ -222,6 +223,16 @@ Widget buildSettingsPage(BuildContext context) {
           childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
           expandedCrossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                gradient: kBrandGradient,
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: const Center(child: AppLogo(height: 84)),
+            ),
+            const SizedBox(height: 12),
             Text(t('about.team'), style: const TextStyle(fontWeight: FontWeight.w700)),
             const SizedBox(height: 8),
             Text(t('about.disclaimer'), style: const TextStyle(height: 1.35)),
@@ -235,6 +246,7 @@ Widget buildSettingsPage(BuildContext context) {
                   children: [
                     Text(r[0], style: const TextStyle(fontSize: 13)),
                     SelectableText(r[1], style: TextStyle(fontSize: 12, color: scheme.primary)),
+
                   ],
                 ),
               ),
@@ -246,7 +258,6 @@ Widget buildSettingsPage(BuildContext context) {
         onPressed: () => _confirmSignOut(context),
         icon: Icon(Icons.logout, color: scheme.error),
         label: Padding(
-
           padding: const EdgeInsets.symmetric(vertical: 12),
           child: Text(t('settings.logout'), style: TextStyle(color: scheme.error)),
         ),

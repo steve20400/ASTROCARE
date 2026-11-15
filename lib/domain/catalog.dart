@@ -104,6 +104,34 @@ const List<SynergyRule> kSynergyRules = [
   ),
 ];
  
+/// NASA Human Research Program risk each indicator relates to.
+/// Official names, from https://www.nasa.gov/hrp/risks/
+const Map<String, String> kNasaRisk = {
+  'heartRate': 'Risk of Cardiovascular Adaptations',
+  'temperature': 'Risk of Altered Immune System Responses',
+  'sleepDuration': 'Risk of Inadequate Sleep and Irregular Schedules',
+  'mood': 'Risk of Behavioral Changes and Psychiatric Disorders',
+};
+ 
+/// First-aid situations of the built-in guide: indicator code, then side.
+const List<List<String>> kAidCases = [
+  ['heartRate', 'high'],
+  ['heartRate', 'low'],
+  ['temperature', 'high'],
+  ['temperature', 'low'],
+  ['sleepDuration', 'low'],
+  ['sleepDuration', 'high'],
+  ['mood', 'low'],
+];
+ 
+/// Side of the nominal range the value falls on: "low" or "high".
+/// A value inside the range (trend alert) is compared with the middle of the range.
+String aidSide(Indicator i, double value) {
+  if (value < i.nominalLow) return 'low';
+  if (value > i.nominalHigh) return 'high';
+  return value < (i.nominalLow + i.nominalHigh) / 2 ? 'low' : 'high';
+}
+ 
 SynergyRule? synergyById(String id) {
   for (final r in kSynergyRules) {
     if (r.id == id) return r;

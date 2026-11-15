@@ -10,7 +10,9 @@ Team **Falcon Health** - NASA Space Apps Challenge 2026, challenge
 - In space the app needs **no connection**: everything is stored on the device.
 - Four indicators: heart rate, body temperature, sleep, mood.
 - Green, orange or red status, always with an icon and a text label.
-- Alerts with plain-language actions and a step-by-step emergency protocol.
+- Alerts with step-by-step first aid, chosen from the indicator and the direction of the
+  deviation, and the warning signs that require the medical officer.
+- A built-in first-aid guide, readable at any time without connection.
 - A **PDF health report** built on the device, to send to the ground through the usual channel.
 - When the internet is available again, the data is backed up to the online database.
 - English and French. Light and dark themes.
@@ -28,8 +30,14 @@ Team **Falcon Health** - NASA Space Apps Challenge 2026, challenge
 3. Authentication > Sign In / Providers: turn off "Confirm email".
 4. "Connect" button: copy the project URL and the publishable key into `lib/config.dart`.
  
-## Build
+## Visual identity
  
+- Colors: NASA Space Apps brand guidelines (June 2026). Blues dominate, Neon Yellow is
+  an accent only, reds are never a background, contrast is at least 4.5:1.
+- Font: Fira Sans (SIL Open Font License), downloaded by `tool/get_fonts.sh` at build time.
+- Logo: `assets/logo.png`, the team's own logo. No NASA logo or identity is used.
+ 
+## Build
 GitHub Actions builds the Android APK on every push to `main`
 (see `.github/workflows/build.yml`). Download it from the workflow run, under Artifacts.
  
@@ -40,6 +48,11 @@ GitHub Actions builds the Android APK on every push to `main`
 - NASA, Ongoing HRP Research in Space: https://www.nasa.gov/hrp/ongoing-hrp-research/
 - Canadian Space Agency, Monitoring Radiation for Astronaut Health
 - Canadian Space Agency, Why Do We Conduct Science Experiments in Space?
+ 
+Each indicator is linked to a risk of the NASA Human Research Program:
+cardiovascular adaptations, altered immune system responses, inadequate sleep and
+irregular schedules, behavioral changes. The first-aid steps are general first-aid
+actions; they are not prescribed by NASA.
  
 ## Disclaimer
  

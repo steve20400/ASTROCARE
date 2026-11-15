@@ -1,4 +1,4 @@
-// Alerts: the list, and for each alert the cause, the recommendations and the protocol.
+// Alerts: the list, and for each alert the first aid to give, the cause and the follow-up.
  
 import 'package:flutter/material.dart';
  
@@ -120,16 +120,18 @@ class AlertDetailPage extends StatelessWidget {
         final color = levelColor(context, alert.level);
         final rule = alert.ruleId.isEmpty ? null : synergyById(alert.ruleId);
         final critical = alert.level == AlertLevel.critical;
-        final steps = t('ind.$code.critical').split('|');
+        final aid = 'aid.$code.${aidSide(indicator, alert.value)}';
+        final hasAid = t('$aid.steps') != '$aid.steps';
+        final steps = (hasAid ? t('$aid.steps') : t('aid.generic.steps')).split('|');
  
         var causeText = t('cause.${alert.cause.name}');
         if (rule != null) {
           causeText = '$causeText\n${t('syn.${rule.id}.name')}: ${t('syn.${rule.id}.risk')}';
         }
         causeText = '$causeText\n${t('ind.$code.space')}';
-        var recoText = t('ind.$code.attention');
-        if (rule != null) recoText = '$recoText\n${t('syn.${rule.id}.advice')}';
-        recoText = '$recoText\n${t('alert.ground')}';
+        causeText = '$causeText\n${t('aid.ref')}: ${kNasaRisk[code] ?? ''}';
+        var recoText = t('alert.ground');
+        if (rule != null) recoText = '${t('syn.${rule.id}.advice')}\n$recoText';
  
         return Scaffold(
           appBar: AppBar(title: Text(t('ind.$code.name'))),
@@ -159,9 +161,9 @@ class AlertDetailPage extends StatelessWidget {
                                 color: color,
                                 fontWeight: FontWeight.w800,
                                 fontSize: 17,
+
                               ),
                             ),
-
                             const SizedBox(height: 4),
                             Text(
                               '${t('alert.value')}: ${indicator.format(alert.value)} '
@@ -176,58 +178,43 @@ class AlertDetailPage extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 8),
-                if (critical)
-                  Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(14),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Icon(Icons.medical_services_outlined, color: color),
-                              const SizedBox(width: 8),
-                              Text(
-                                t('alert.protocol'),
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w800,
-                                  fontSize: 16,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 10),
-                          for (var i = 0; i < steps.length; i++)
-                            Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 5),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  CircleAvatar(
-                                    radius: 13,
-                                    backgroundColor: color,
-                                    child: Text(
-                                      '${i + 1}',
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 13,
-                                        fontWeight: FontWeight.w700,
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 10),
-                                  Expanded(
-                                    child: Text(
-                                      steps[i],
-                                      style: const TextStyle(fontSize: 15, height: 1.35),
-                                    ),
-                                  ),
-                                ],
+                Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(14),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(Icons.medical_services_outlined, color: color),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                hasAid ? '${t('aid.title')}: ${t('$aid.title')}' : t('aid.title'),
+                                style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16),
                               ),
                             ),
-                        ],
-                      ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        if (critical)
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 6),
+                            child: Text(
+                              t('aid.critical'),
+                              style: TextStyle(color: color, fontWeight: FontWeight.w700),
+                            ),
+                          ),
+                        StepList(steps: steps, color: color),
+                      ],
                     ),
+                  ),
+                ),
+                if (hasAid)
+                  InfoBlock(
+                    icon: Icons.emergency_outlined,
+                    title: t('aid.urgent'),
+                    body: t('$aid.urgent'),
                   ),
                 InfoBlock(icon: Icons.task_alt, title: t('alert.reco'), body: recoText),
                 InfoBlock(icon: Icons.help_outline, title: t('alert.cause'), body: causeText),
@@ -246,7 +233,6 @@ class AlertDetailPage extends StatelessWidget {
                       child: Text(t('alert.ack')),
                     ),
                   ),
-
                 if (alert.isOpen) ...[
                   const SizedBox(height: 8),
                   OutlinedButton.icon(
@@ -260,6 +246,7 @@ class AlertDetailPage extends StatelessWidget {
                 ],
               ],
             ),
+
           ),
         );
       },

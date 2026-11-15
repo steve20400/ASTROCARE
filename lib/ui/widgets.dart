@@ -1,4 +1,4 @@
-// Small reusable widgets: status chip, section title, line chart.
+// Small reusable widgets: logo, status chip, section title, numbered steps, line chart.
  
 import 'package:flutter/material.dart';
  
@@ -6,7 +6,77 @@ import '../app/app_state.dart';
 import '../domain/models.dart';
 import 'theme.dart';
  
+/// The AstroCare logo (assets/logo.png). It is drawn for a dark blue background.
+/// When the image is missing from the build, a text version is shown instead.
+class AppLogo extends StatelessWidget {
+  final double height;
+ 
+  const AppLogo({super.key, this.height = 110});
+ 
+  @override
+  Widget build(BuildContext context) {
+    return Image.asset(
+      'assets/logo.png',
+      height: height,
+      fit: BoxFit.contain,
+      semanticLabel: 'AstroCare',
+      errorBuilder: (context, error, stack) => Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.health_and_safety_outlined, color: kBlueYonder, size: height * 0.5),
+          const SizedBox(width: 10),
+          Text(
+            'AstroCare',
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.w900,
+              fontSize: height * 0.3,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+/// Numbered steps, one under the other. Used for first aid.
+class StepList extends StatelessWidget {
+  final List<String> steps;
+  final Color color;
+ 
+  const StepList({super.key, required this.steps, required this.color});
+ 
+  @override
+  Widget build(BuildContext context) {
+    final onColor = isDark(context) ? kDeepBlue : Colors.white;
+    return Column(
+      children: [
+        for (var i = 0; i < steps.length; i++)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 5),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                CircleAvatar(
+                  radius: 13,
+                  backgroundColor: color,
+                  child: Text(
+                    '${i + 1}',
+                    style: TextStyle(color: onColor, fontSize: 13, fontWeight: FontWeight.w700),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(steps[i], style: const TextStyle(fontSize: 15, height: 1.35)),
+                ),
+              ],
+            ),
+          ),
+      ],
+    );
+  }
+}
 class LevelChip extends StatelessWidget {
+
   final AlertLevel? level;
   final bool large;
  
@@ -76,7 +146,6 @@ class InfoBlock extends StatelessWidget {
           children: [
             Row(
               children: [
-
                 Icon(icon, size: 20, color: Theme.of(context).colorScheme.primary),
                 const SizedBox(width: 8),
                 Expanded(
@@ -92,7 +161,7 @@ class InfoBlock extends StatelessWidget {
     );
   }
 }
- 
+
 /// Line chart of an indicator over time, with the nominal range as a band.
 class LineChart extends StatelessWidget {
   final List<double> values;
@@ -161,7 +230,7 @@ class _LineChartPainter extends CustomPainter {
     )..layout();
     tp.paint(canvas, Offset(at.dx, at.dy - tp.height / 2));
   }
-
+ 
   @override
   void paint(Canvas canvas, Size size) {
     if (values.isEmpty) return;
@@ -177,6 +246,7 @@ class _LineChartPainter extends CustomPainter {
     if (bandLow != null && bandLow! < lo) lo = bandLow!;
     if (bandHigh != null && bandHigh! > hi) hi = bandHigh!;
     if ((hi - lo).abs() < 1e-9) {
+
       hi += 1;
       lo -= 1;
     }

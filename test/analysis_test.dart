@@ -5,6 +5,11 @@ import 'package:astrocare/data/simple_pdf.dart';
 import 'package:astrocare/domain/analysis.dart';
 import 'package:astrocare/domain/catalog.dart';
 import 'package:astrocare/domain/models.dart';
+import 'package:astrocare/l10n/strings.dart';
+import 'package:astrocare/ui/first_aid_page.dart';
+import 'package:astrocare/ui/login_page.dart';
+import 'package:astrocare/ui/theme.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
  
 void main() {
@@ -38,6 +43,7 @@ void main() {
     expect(result.level, AlertLevel.critical);
     expect(result.cause, AlertCause.synergy);
   });
+ 
   test('no combined risk when the hazard is not active', () {
     final result = engine.analyze(
       indicator: indicatorByCode('heartRate'),
@@ -70,16 +76,41 @@ void main() {
     expect(RemoteApi.errorCode('{"code":"42501","message":"rls"}', 403), 'PERMISSION_DENIED');
     expect(RemoteApi.errorCode('not json', 500), 'HTTP_500');
   });
- 
+
   test('the PDF writer produces a well-formed file', () {
     final bytes = SimplePdf.build([
       const PdfLine('AstroCare - Rapport de santé', size: 18, bold: true),
       for (var i = 0; i < 120; i++) PdfLine('Ligne $i : fréquence cardiaque (72 bpm)'),
     ]);
-
     final text = latin1.decode(bytes);
     expect(text.startsWith('%PDF-1.4'), isTrue);
     expect(text.trimRight().endsWith('%%EOF'), isTrue);
     expect('/Type /Page '.allMatches(text).length, greaterThan(1));
+  });
+ 
+  test('every first-aid situation has its texts in English and French', () {
+    for (final c in kAidCases) {
+      final key = 'aid.${c[0]}.${c[1]}';
+      for (final lang in ['en', 'fr']) {
+        for (final part in ['title', 'steps', 'urgent']) {
+          expect(translate(lang, '$key.$part'), isNot('$key.$part'));
+        }
+      }
+      expect(kNasaRisk[c[0]], isNotNull);
+    }
+    final heart = indicatorByCode('heartRate');
+    expect(aidSide(heart, 130), 'high');
+    expect(aidSide(heart, 38), 'low');
+  });
+ 
+  testWidgets('sign-in and first-aid screens draw in both themes', (tester) async {
+    for (final dark in [false, true]) {
+      await tester.pumpWidget(MaterialApp(theme: buildTheme(dark), home: const LoginPage()));
+      expect(find.byType(TextField), findsWidgets);
+      await tester.pumpWidget(MaterialApp(theme: buildTheme(dark), home: const FirstAidPage()));
+      await tester.tap(find.byType(ExpansionTile).first);
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
+    }
   });
 }
