@@ -50,16 +50,25 @@ void main() {
     expect(result.cause, AlertCause.threshold);
   });
  
-  test('online database fields survive an encode and decode round trip', () {
+  test('a measurement survives the trip to the online database and back', () {
     final at = DateTime(2026, 11, 14, 22, 30);
     final m = Measurement(id: 'm1', indicator: 'mood', value: 4, at: at);
-    final encoded = RemoteApi.encodeFields(m.toRemote());
-    final decoded = RemoteApi.decodeFields(jsonDecode(jsonEncode(encoded)));
-    decoded['id'] = 'm1';
-    final back = Measurement.fromJson(decoded);
+    final row = jsonDecode(jsonEncode(m.toRemote('user-1'))) as Map<String, dynamic>;
+    expect(row['user_id'], 'user-1');
+    final back = Measurement.fromRemote(row);
     expect(back.indicator, 'mood');
     expect(back.value, 4);
     expect(back.at.isAtSameMomentAs(at), isTrue);
+    expect(back.synced, isTrue);
+  });
+ 
+  test('Supabase errors become short codes', () {
+    expect(
+      RemoteApi.errorCode('{"code":400,"error_code":"invalid_credentials","msg":"x"}', 400),
+      'INVALID_CREDENTIALS',
+    );
+    expect(RemoteApi.errorCode('{"code":"42501","message":"rls"}', 403), 'PERMISSION_DENIED');
+    expect(RemoteApi.errorCode('not json', 500), 'HTTP_500');
   });
  
   test('the PDF writer produces a well-formed file', () {
@@ -67,6 +76,7 @@ void main() {
       const PdfLine('AstroCare - Rapport de santé', size: 18, bold: true),
       for (var i = 0; i < 120; i++) PdfLine('Ligne $i : fréquence cardiaque (72 bpm)'),
     ]);
+
     final text = latin1.decode(bytes);
     expect(text.startsWith('%PDF-1.4'), isTrue);
     expect(text.trimRight().endsWith('%%EOF'), isTrue);

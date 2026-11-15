@@ -77,8 +77,22 @@ class Measurement {
     this.synced = false,
   });
 
-  /// Fields stored in the online database.
-  Map<String, dynamic> toRemote() => {'indicator': indicator, 'value': value, 'at': at};
+  /// Row stored in the online table "measurements".
+  Map<String, dynamic> toRemote(String userId) => {
+    'id': id,
+    'user_id': userId,
+    'indicator': indicator,
+    'value': value,
+    'at': at.toUtc().toIso8601String(),
+  };
+ 
+  factory Measurement.fromRemote(Map<String, dynamic> row) => Measurement(
+    id: '${row['id']}',
+    indicator: '${row['indicator']}',
+    value: (row['value'] as num?)?.toDouble() ?? 0,
+    at: (DateTime.tryParse('${row['at']}') ?? DateTime.now()).toLocal(),
+    synced: true,
+  );
  
   Map<String, dynamic> toJson() => {
     'id': id,
@@ -126,15 +140,31 @@ class HealthAlert {
  
   bool get isOpen => status != AlertStatus.resolved;
  
-  Map<String, dynamic> toRemote() => {
+  /// Row stored in the online table "alerts".
+  Map<String, dynamic> toRemote(String userId) => {
+    'id': id,
+    'user_id': userId,
     'indicator': indicator,
     'value': value,
     'level': level.name,
     'cause': cause.name,
-    'ruleId': ruleId,
-    'createdAt': createdAt,
+    'rule_id': ruleId,
     'status': status.name,
+    'created_at': createdAt.toUtc().toIso8601String(),
   };
+ 
+  factory HealthAlert.fromRemote(Map<String, dynamic> row) => HealthAlert(
+    id: '${row['id']}',
+    indicator: '${row['indicator']}',
+    value: (row['value'] as num?)?.toDouble() ?? 0,
+    level: enumByName(AlertLevel.values, row['level'], AlertLevel.attention),
+    cause: enumByName(AlertCause.values, row['cause'], AlertCause.threshold),
+    ruleId: '${row['rule_id'] ?? ''}',
+    createdAt: (DateTime.tryParse('${row['created_at']}') ?? DateTime.now()).toLocal(),
+
+    status: enumByName(AlertStatus.values, row['status'], AlertStatus.active),
+    synced: true,
+  );
  
   Map<String, dynamic> toJson() => {
     'id': id,
@@ -161,7 +191,6 @@ class HealthAlert {
     status: enumByName(AlertStatus.values, j['status'], AlertStatus.active),
     synced: j['synced'] == true,
   );
-
 }
  
 /// A combination of indicators that, under a spaceflight hazard, raises the risk.
@@ -198,6 +227,7 @@ class AnalysisResult {
     required this.cause,
   });
 }
+ 
 /// The signed-in astronaut. Kept on the device so the app opens without any network.
 class Session {
   final String uid;
@@ -216,6 +246,7 @@ class Session {
     required this.refreshToken,
     required this.idToken,
     required this.idTokenExpiry,
+
   });
  
   Map<String, dynamic> toJson() => {

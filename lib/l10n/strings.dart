@@ -47,14 +47,16 @@ const Map<String, String> kEn = {
   "login.required": "Fill in every field.",
   "login.pwshort": "The password needs at least 6 characters.",
   "err.NETWORK": "No internet connection. Signing in needs the internet.",
-  "err.NOT_CONFIGURED": "The online database is not configured yet (file lib/config.dart).",
-  "err.EMAIL_EXISTS": "An account already uses this email.",
-  "err.INVALID_LOGIN_CREDENTIALS": "Wrong email or password.",
-  "err.EMAIL_NOT_FOUND": "Wrong email or password.",
-  "err.INVALID_PASSWORD": "Wrong email or password.",
+  "err.NOT_CONFIGURED": "The online database is not configured (file lib/config.dart).",
+  "err.USER_ALREADY_EXISTS": "An account already uses this email.",
+  "err.INVALID_CREDENTIALS": "Wrong email or password.",
   "err.WEAK_PASSWORD": "The password needs at least 6 characters.",
-  "err.INVALID_EMAIL": "This email address is not valid.",
-  "err.PERMISSION_DENIED": "Access refused by the online database. Check the security rules.",
+  "err.EMAIL_ADDRESS_INVALID": "This email address is not accepted.",
+  "err.VALIDATION_FAILED": "This email address is not valid.",
+  "err.EMAIL_NOT_CONFIRMED": "This account must be confirmed by email first.",
+  "err.OVER_REQUEST_RATE_LIMIT": "Too many attempts. Wait one minute and try again.",
+  "err.PERMISSION_DENIED": "Access refused by the online database.",
+  "err.TABLE_MISSING": "The online tables are missing. Run supabase/schema.sql.",
   "err.generic": "Something went wrong ({0}). Try again.",
   "home.hello": "Hello, {0}",
   "home.overall": "Overall status",
@@ -74,9 +76,9 @@ const Map<String, String> kEn = {
   "add.title": "New measurement",
   "add.indicator": "Indicator",
   "add.value": "Value",
+
   "add.save": "Save",
   "add.cancel": "Cancel",
-
   "add.invalid": "Enter a number between {0} and {1}.",
   "add.how": "How to measure",
   "add.saved": "{0} recorded: {1}",
@@ -159,9 +161,9 @@ const Map<String, String> kEn = {
       "the closed cabin.",
   "ind.temperature.attention":
       "Rest, drink water, and measure again in one hour. Limit "
+
       "contact with the crew.",
   "ind.temperature.critical":
-
       "Tell the medical officer now.|Rest and hydrate."
       "|Fever: remove layers and cool down. Too cold: warm up with blankets."
       "|Measure every 30 minutes.|Prepare a report for the flight surgeons.",
@@ -227,18 +229,16 @@ const Map<String, String> kFr = {
   "login.required": "Remplissez tous les champs.",
   "login.pwshort": "Le mot de passe doit contenir au moins 6 caractères.",
   "err.NETWORK": "Pas de connexion Internet. La connexion au compte en a besoin.",
-  "err.NOT_CONFIGURED":
-      "La base en ligne n'est pas encore configurée (fichier "
-      "lib/config.dart).",
-  "err.EMAIL_EXISTS": "Un compte utilise déjà cette adresse e-mail.",
-  "err.INVALID_LOGIN_CREDENTIALS": "Adresse e-mail ou mot de passe incorrect.",
-  "err.EMAIL_NOT_FOUND": "Adresse e-mail ou mot de passe incorrect.",
-  "err.INVALID_PASSWORD": "Adresse e-mail ou mot de passe incorrect.",
+  "err.NOT_CONFIGURED": "La base en ligne n'est pas configurée (fichier lib/config.dart).",
+  "err.USER_ALREADY_EXISTS": "Un compte utilise déjà cette adresse e-mail.",
+  "err.INVALID_CREDENTIALS": "Adresse e-mail ou mot de passe incorrect.",
   "err.WEAK_PASSWORD": "Le mot de passe doit contenir au moins 6 caractères.",
-  "err.INVALID_EMAIL": "Cette adresse e-mail n'est pas valide.",
-  "err.PERMISSION_DENIED":
-      "Accès refusé par la base en ligne. Vérifiez les règles de "
-      "sécurité.",
+  "err.EMAIL_ADDRESS_INVALID": "Cette adresse e-mail n'est pas acceptée.",
+  "err.VALIDATION_FAILED": "Cette adresse e-mail n'est pas valide.",
+  "err.EMAIL_NOT_CONFIRMED": "Ce compte doit d'abord être confirmé par e-mail.",
+  "err.OVER_REQUEST_RATE_LIMIT": "Trop d'essais. Attendez une minute et réessayez.",
+  "err.PERMISSION_DENIED": "Accès refusé par la base en ligne.",
+  "err.TABLE_MISSING": "Les tables en ligne sont absentes. Exécutez supabase/schema.sql.",
   "err.generic": "Une erreur est survenue ({0}). Réessayez.",
   "home.hello": "Bonjour, {0}",
   "home.overall": "État général",

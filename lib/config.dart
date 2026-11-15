@@ -1,10 +1,9 @@
-// Firebase project settings. Replace the two values below with those of YOUR project:
-// Firebase console > Project settings > General ("Project ID" and "Web API key").
+// Supabase project settings (dashboard: "Connect" button).
 // These two values are public identifiers, not secrets: access is protected by the
-// sign-in and by the Firestore security rules.
+// sign-in and by the row level security policies of the database.
+// Never put the "secret" key or the database password in the app.
  
-const String kFirebaseApiKey = 'PASTE_WEB_API_KEY_HERE';
-const String kFirebaseProjectId = 'PASTE_PROJECT_ID_HERE';
+const String kSupabaseUrl = 'https://dwlyojrnkkghfcxvgdmf.supabase.co';
+const String kSupabaseKey = 'sb_publishable_1zdVVo7UyvJIr33GfquUGQ_Inh8qwXW';
  
-bool get isFirebaseConfigured =>
-    !kFirebaseApiKey.startsWith('PASTE_') && !kFirebaseProjectId.startsWith('PASTE_');
+bool get isBackendConfigured => kSupabaseUrl.startsWith('https://') && kSupabaseKey.length > 20;
