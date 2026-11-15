@@ -4,7 +4,6 @@
 # If a download fails, nothing is registered and the app uses the system font.
 set -e
 mkdir -p assets/fonts
-echo "AstroCare" > assets/about.txt
 base="https://raw.githubusercontent.com/google/fonts/main/ofl/firasans"
 for name in Regular Bold Black; do
   curl -fsSL --retry 3 -o "assets/fonts/FiraSans-$name.ttf" "$base/FiraSans-$name.ttf"

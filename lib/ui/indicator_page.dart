@@ -1,4 +1,5 @@
-// Detail of one indicator: status, curve, reference range, explanations, history.
+// Detail of one indicator: status, curve over a chosen period, reference range,
+// explanations, history.
  
 import 'package:flutter/material.dart';
  
@@ -23,7 +24,6 @@ class IndicatorPage extends StatelessWidget {
         final history = appState.history(code);
         final last = history.isEmpty ? null : history.last;
         final AlertLevel? level = last == null ? null : indicator.levelFor(last.value);
-        final recent = history.length > 30 ? history.sublist(history.length - 30) : history;
         final range = t('range.nominal', [
           indicator.format(indicator.nominalLow),
           indicator.format(indicator.nominalHigh),
@@ -72,26 +72,11 @@ class IndicatorPage extends StatelessWidget {
                   ),
                 ),
                 SectionTitle(t('ind.trend')),
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(12),
-                    child: recent.length < 2
-
-                        ? Padding(
-                            padding: const EdgeInsets.all(12),
-                            child: Text(t('ind.needTwo')),
-                          )
-                        : LineChart(
-                            values: [for (final m in recent) m.value],
-                            levels: [for (final m in recent) indicator.levelFor(m.value)],
-                            bandLow: indicator.nominalLow,
-                            bandHigh: indicator.nominalHigh,
-                          ),
-                  ),
-                ),
+                _TrendCard(indicator: indicator, history: history),
                 InfoBlock(
                   icon: Icons.straighten,
                   title: t('ind.range'),
+
                   body: '$range\n${t('range.note')}',
                 ),
                 InfoBlock(
@@ -137,6 +122,114 @@ class IndicatorPage extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+}
+ 
+/// Curve of the indicator over a period chosen by the astronaut: last 24 hours,
+/// 7 days, 30 days, or everything. The points are placed according to their date.
+class _TrendCard extends StatefulWidget {
+  final Indicator indicator;
+  final List<Measurement> history;
+ 
+  const _TrendCard({required this.indicator, required this.history});
+ 
+  @override
+  State<_TrendCard> createState() => _TrendCardState();
+}
+ 
+class _TrendCardState extends State<_TrendCard> {
+  // Kept for the whole session, so that every indicator opens on the same period.
+  static String _period = '7d';
+ 
+  static const Map<String, Duration?> _lengths = {
+    '24h': Duration(hours: 24),
+    '7d': Duration(days: 7),
+    '30d': Duration(days: 30),
+    'all': null,
+  };
+ 
+  @override
+  Widget build(BuildContext context) {
+    final i = widget.indicator;
+    final now = DateTime.now();
+    final length = _lengths[_period];
+    final all = widget.history;
+    final start = length != null
+        ? now.subtract(length)
+        : (all.isEmpty ? now.subtract(const Duration(days: 1)) : all.first.at);
+    final shown = [
+      for (final m in all)
+        if (!m.at.isBefore(start)) m,
+
+    ];
+    final total = now.difference(start).inSeconds;
+    double place(DateTime d) => total <= 0 ? 0.5 : d.difference(start).inSeconds / total;
+ 
+    var low = 0.0;
+    var high = 0.0;
+    var sum = 0.0;
+    for (final m in shown) {
+      if (m == shown.first || m.value < low) low = m.value;
+      if (m == shown.first || m.value > high) high = m.value;
+      sum += m.value;
+    }
+ 
+    Widget stat(String label, String value) => Expanded(
+      child: Column(
+        children: [
+          Text(label, style: const TextStyle(fontSize: 12)),
+          Text(value, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+        ],
+      ),
+    );
+ 
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            SegmentedButton<String>(
+              showSelectedIcon: false,
+              segments: [
+                for (final p in _lengths.keys)
+                  ButtonSegment<String>(value: p, label: Text(t('period.$p'))),
+              ],
+              selected: {_period},
+              onSelectionChanged: (s) => setState(() => _period = s.first),
+            ),
+            const SizedBox(height: 12),
+            if (shown.isEmpty)
+              Padding(padding: const EdgeInsets.all(12), child: Text(t('trend.none')))
+            else ...[
+              LineChart(
+                values: [for (final m in shown) m.value],
+                levels: [for (final m in shown) i.levelFor(m.value)],
+                bandLow: i.nominalLow,
+                bandHigh: i.nominalHigh,
+                xs: [for (final m in shown) place(m.at)],
+                startLabel: appState.formatDate(start),
+                endLabel: appState.formatDate(now),
+              ),
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  stat(t('trend.min'), '${i.format(low)} ${i.unit}'),
+                  stat(t('trend.avg'), '${i.format(sum / shown.length)} ${i.unit}'),
+                  stat(t('trend.max'), '${i.format(high)} ${i.unit}'),
+                ],
+              ),
+              const SizedBox(height: 6),
+              Text(
+                t('trend.count', [shown.length]),
+                textAlign: TextAlign.center,
+                style: const TextStyle(fontSize: 12.5),
+              ),
+            ],
+          ],
+        ),
+      ),
     );
   }
 }

@@ -16,12 +16,16 @@ jobs:
           distribution: temurin
           java-version: "17"
  
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+ 
       - uses: subosito/flutter-action@v2
         with:
           channel: stable
           cache: true
  
-      - name: Generate the Android project
+      - name: Generate the Android project files that are missing
         run: flutter create --platforms=android --org org.falconhealth --project-name astrocare .
  
       - name: Allow internet access (sign-in and online backup)
@@ -31,12 +35,27 @@ jobs:
           's|<application|<uses-permission android:name="android.permission.INTERNET"/><application|'
           android/app/src/main/AndroidManifest.xml
  
-      - name: Prepare the assets folder and download the brand font
-        run: mkdir -p assets && bash tool/get_fonts.sh
+      - name: Show the app name with its capital letters
+        run: >-
+          sed -i
+          's|android:label="astrocare"|android:label="AstroCare"|'
+          android/app/src/main/AndroidManifest.xml
+ 
+      - name: Install the image library used to build the icon
+        run: pip install pillow
+        continue-on-error: true
+ 
+      - name: Use the team logo as the app icon
+        run: python tool/make_icon.py
+        continue-on-error: true
+ 
+      - name: Download the brand font
+        run: bash tool/get_fonts.sh
         continue-on-error: true
  
       - name: Remove the default template test
         run: rm -f test/widget_test.dart
+ 
       - name: Get dependencies
         run: flutter pub get
  
