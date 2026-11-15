@@ -1,10 +1,11 @@
-// Main frame of the app: three tabs. Each tab is rebuilt whenever the state changes.
+// Main frame of the app: four tabs. Each tab is rebuilt whenever the state changes.
  
 import 'package:flutter/material.dart';
  
 import '../app/app_state.dart';
 import 'add_measurement_sheet.dart';
 import 'alerts_page.dart';
+import 'body_page.dart';
 import 'home_page.dart';
 import 'settings_page.dart';
  
@@ -21,8 +22,10 @@ class _HomeShellState extends State<HomeShell> {
   Widget _page() {
     switch (_index) {
       case 1:
-        return buildAlertsPage(context);
+        return const BodyPage();
       case 2:
+        return buildAlertsPage(context);
+      case 3:
         return buildSettingsPage(context);
       default:
         return buildHomePage(context);
@@ -35,7 +38,7 @@ class _HomeShellState extends State<HomeShell> {
       animation: appState,
       builder: (context, _) {
         final openCount = appState.openAlertCount;
-        final titles = [t('nav.home'), t('nav.alerts'), t('nav.settings')];
+        final titles = [t('nav.home'), t('nav.body'), t('nav.alerts'), t('nav.settings')];
         return Scaffold(
           appBar: AppBar(title: Text(_index == 0 ? 'AstroCare' : titles[_index])),
           body: SafeArea(child: _page()),
@@ -52,16 +55,20 @@ class _HomeShellState extends State<HomeShell> {
             destinations: [
               NavigationDestination(icon: const Icon(Icons.home_outlined), label: titles[0]),
               NavigationDestination(
+                icon: const Icon(Icons.accessibility_new),
+                label: titles[1],
+              ),
+              NavigationDestination(
                 icon: Badge(
                   isLabelVisible: openCount > 0,
                   label: Text('$openCount'),
                   child: const Icon(Icons.notifications_outlined),
                 ),
-                label: titles[1],
+                label: titles[2],
               ),
               NavigationDestination(
                 icon: const Icon(Icons.settings_outlined),
-                label: titles[2],
+                label: titles[3],
               ),
             ],
           ),
@@ -69,4 +76,5 @@ class _HomeShellState extends State<HomeShell> {
       },
     );
   }
+
 }

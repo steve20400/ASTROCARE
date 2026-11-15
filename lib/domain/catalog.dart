@@ -104,6 +104,13 @@ const List<SynergyRule> kSynergyRules = [
   ),
 ];
  
+/// Zones of the 3D figure, and the indicators carried by each zone.
+const Map<String, List<String>> kBodyZones = {
+  'head': ['sleepDuration', 'mood'],
+  'heart': ['heartRate'],
+  'body': ['temperature'],
+};
+ 
 /// NASA Human Research Program risk each indicator relates to.
 /// Official names, from https://www.nasa.gov/hrp/risks/
 const Map<String, String> kNasaRisk = {
@@ -112,7 +119,6 @@ const Map<String, String> kNasaRisk = {
   'sleepDuration': 'Risk of Inadequate Sleep and Irregular Schedules',
   'mood': 'Risk of Behavioral Changes and Psychiatric Disorders',
 };
- 
 /// First-aid situations of the built-in guide: indicator code, then side.
 const List<List<String>> kAidCases = [
   ['heartRate', 'high'],

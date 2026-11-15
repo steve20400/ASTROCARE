@@ -6,6 +6,7 @@ import 'package:astrocare/domain/analysis.dart';
 import 'package:astrocare/domain/catalog.dart';
 import 'package:astrocare/domain/models.dart';
 import 'package:astrocare/l10n/strings.dart';
+import 'package:astrocare/ui/body_page.dart';
 import 'package:astrocare/ui/first_aid_page.dart';
 import 'package:astrocare/ui/login_page.dart';
 import 'package:astrocare/ui/theme.dart';
@@ -75,8 +76,8 @@ void main() {
     );
     expect(RemoteApi.errorCode('{"code":"42501","message":"rls"}', 403), 'PERMISSION_DENIED');
     expect(RemoteApi.errorCode('not json', 500), 'HTTP_500');
-  });
 
+  });
   test('the PDF writer produces a well-formed file', () {
     final bytes = SimplePdf.build([
       const PdfLine('AstroCare - Rapport de santé', size: 18, bold: true),
@@ -112,5 +113,25 @@ void main() {
       await tester.pumpAndSettle();
       expect(tester.takeException(), isNull);
     }
+  });
+ 
+  testWidgets('the 3D figure draws, turns and reacts to a touched zone', (tester) async {
+    for (final dark in [false, true]) {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: buildTheme(dark),
+          home: const Scaffold(body: BodyPage()),
+        ),
+      );
+      await tester.pump(const Duration(milliseconds: 400));
+      expect(find.text('Heart'), findsWidgets);
+      await tester.tap(find.text('Head'));
+      await tester.pump(const Duration(milliseconds: 100));
+      expect(find.text('Head: sleep and mood'), findsOneWidget);
+      await tester.drag(find.byType(CustomPaint).first, const Offset(120, 0));
+      await tester.pump(const Duration(milliseconds: 100));
+      expect(tester.takeException(), isNull);
+    }
+    await tester.pumpWidget(const SizedBox());
   });
 }
