@@ -1,5 +1,5 @@
 // All texts of the app, in English and French. Embedded: no network is needed.
-// In protocol texts ("ind.<code>.critical"), steps are separated by "|".
+// In first-aid texts ("aid.<code>.<side>.steps"), steps are separated by "|".
  
 String translate(String lang, String key, [List<Object> args = const []]) {
   var s = (lang == 'fr' ? kFr[key] : null) ?? kEn[key] ?? key;
@@ -100,8 +100,6 @@ const Map<String, String> kEn = {
   "alerts.past": "Resolved alerts",
   "alert.value": "Measured value",
   "alert.cause": "Why this alert",
-  "alert.reco": "Recommended actions",
-  "alert.protocol": "Emergency protocol",
   "alert.ack": "Actions done: acknowledge",
   "alert.acked": "Alert acknowledged. Take a control measurement.",
   "alert.control": "Take a control measurement",
@@ -146,49 +144,95 @@ const Map<String, String> kEn = {
   "ind.heartRate.space":
       "In weightlessness the heart works differently and can lose "
       "conditioning.",
-  "ind.heartRate.attention":
-      "Rest 10 minutes and measure again. Drink water. Avoid effort "
-      "until it settles.",
-  "ind.heartRate.critical":
-      "Stop all activity and stay still.|Tell a crewmate now."
-      "|Measure again after 5 minutes.|Follow the medical officer and prepare a report "
-      "for the flight surgeons.",
   "ind.temperature.name": "Body temperature",
   "ind.temperature.what": "Temperature of the body, in degrees Celsius.",
   "ind.temperature.how": "Use the thermometer as instructed and stay still until the beep.",
   "ind.temperature.space":
       "Immunity changes in space: a fever can reveal an infection in "
       "the closed cabin.",
-  "ind.temperature.attention":
-      "Rest, drink water, and measure again in one hour. Limit "
-
-      "contact with the crew.",
-  "ind.temperature.critical":
-      "Tell the medical officer now.|Rest and hydrate."
-      "|Fever: remove layers and cool down. Too cold: warm up with blankets."
-      "|Measure every 30 minutes.|Prepare a report for the flight surgeons.",
   "ind.sleepDuration.name": "Sleep",
   "ind.sleepDuration.what": "Hours slept during the last sleep period.",
   "ind.sleepDuration.how":
       "Enter the hours actually slept, not the time spent in the "
       "sleep station.",
   "ind.sleepDuration.space": "No natural day and night, noise and workload shorten sleep.",
-  "ind.sleepDuration.attention":
-      "Dim the lights one hour before sleep, avoid screens, and "
-      "keep a fixed schedule.",
-  "ind.sleepDuration.critical":
-      "Tell the commander: fatigue is a safety risk."
-      "|Postpone critical tasks such as piloting or spacewalks."
-      "|Plan a recovery sleep period today.|Mention it in your report to the flight surgeons.",
   "ind.mood.name": "Mood",
   "ind.mood.what": "Your own rating of your mood, from 1 (very low) to 5 (very good).",
   "ind.mood.how": "Answer honestly: how do you feel right now?",
   "ind.mood.space": "Isolation, confinement and distance from family weigh on morale.",
-  "ind.mood.attention": "Take a break, do an activity you enjoy, and talk with a crewmate.",
-  "ind.mood.critical":
-      "Do not stay alone: talk to a crewmate you trust now."
-      "|Tell the medical officer.|Ask for a private conference with the ground support team."
-      "|Lighten your schedule for today.",
+  "alert.reco": "Follow-up",
+
+  "aid.title": "First aid",
+  "aid.guide": "First-aid guide",
+  "aid.guide.hint": "What to do, step by step. Works without connection.",
+  "aid.intro":
+      "For each situation the app can detect: the first actions to take, and the "
+      "signs that mean you must call the medical officer.",
+  "aid.urgent": "Tell the medical officer now if",
+  "aid.critical": "Critical value: tell the medical officer now, then follow these steps.",
+  "aid.ref": "NASA HRP reference",
+  "aid.source":
+      "General first-aid actions, linked to the risks listed by the NASA Human "
+      "Research Program. They do not replace the medical officer or the flight "
+      "surgeons.",
+  "aid.generic.steps":
+      "Rest for 10 minutes.|Take a control measurement.|If the value stays unusual, "
+      "tell the medical officer.",
+  "aid.heartRate.high.title": "Fast heart rate at rest",
+  "aid.heartRate.high.steps":
+      "Stop all effort and stay still.|Breathe slowly for 5 minutes: in for 4 "
+      "seconds, out for 6 seconds.|Drink water.|Avoid coffee and other "
+      "stimulants.|Measure again after 10 minutes.",
+  "aid.heartRate.high.urgent":
+      "you have chest pain, shortness of breath, you feel faint, or the rate stays "
+      "above 120 bpm after resting.",
+  "aid.heartRate.low.title": "Slow heart rate",
+  "aid.heartRate.low.steps":
+      "Stop the activity and secure yourself.|Check how you feel: dizziness, "
+      "weakness, confusion?|Ask a crewmate to stay with you.|Measure again after 5 "
+      "minutes.|No symptom at all: a slow rate can be normal for a trained person.",
+  "aid.heartRate.low.urgent":
+      "you feel dizzy or faint, you have chest pain, or the rate is below 40 bpm.",
+  "aid.temperature.high.title": "Fever or overheating",
+  "aid.temperature.high.steps":
+      "Stop physical work and rest.|Drink water often, in small amounts.|Remove extra "
+      "layers and cool the skin with a damp cloth.|Limit contact with the crew and "
+      "clean your hands: it may be an infection.|Measure again every 30 minutes.",
+  "aid.temperature.high.urgent":
+      "the temperature is 38.5 °C or more, you are confused, you have a stiff neck or "
+      "trouble breathing, or the fever lasts more than one day.",
+  "aid.temperature.low.title": "Low body temperature",
+  "aid.temperature.low.steps":
+      "Put on dry, warm layers and cover your head.|Have a warm drink.|Move gently to "
+      "warm up.|Check the cabin temperature.|Measure again after 30 minutes.",
+  "aid.temperature.low.urgent":
+      "the temperature is below 35 °C, you shiver strongly, you are confused or your "
+      "speech is slurred.",
+  "aid.sleepDuration.low.title": "Not enough sleep",
+  "aid.sleepDuration.low.steps":
+      "Tell your crewmates you are tired before any risky task.|Postpone critical "
+      "tasks, or ask a crewmate to double-check your work.|Take a nap of 20 to 30 "
+      "minutes.|No coffee in the 6 hours before sleep.|Dim the lights and stop "
+      "screens one hour before sleep, and keep fixed hours.",
+  "aid.sleepDuration.low.urgent":
+      "you slept less than 5 hours for several nights, you fall asleep during tasks, "
+      "or you make unusual mistakes.",
+  "aid.sleepDuration.high.title": "Unusually long sleep",
+  "aid.sleepDuration.high.steps":
+      "After a heavy day, a long sleep can simply be recovery.|Check your other "
+      "indicators: temperature and mood.|Get bright light and exercise soon after "
+      "waking.|Keep fixed hours for sleeping and waking.",
+  "aid.sleepDuration.high.urgent":
+      "long sleep lasts several days, or comes with a low mood or a fever.",
+  "aid.mood.low.title": "Low mood",
+  "aid.mood.low.steps":
+      "Take a 15-minute break from the task.|Talk with a crewmate you trust.|Do "
+      "something you enjoy: music, photos, messages from family, tending the "
+      "plants.|Exercise: it improves mood.|Write a few lines in your journal.",
+  "aid.mood.low.urgent":
+      "your mood is at 1, it stays low for several days, you lose interest in "
+      "everything, or you think about harming yourself. Also ask for a private "
+      "conference with the ground team.",
 };
  
 const Map<String, String> kFr = {
@@ -202,6 +246,7 @@ const Map<String, String> kFr = {
   "status.active": "Active",
   "status.acknowledged": "Acquittée",
   "status.resolved": "Résolue",
+
   "cause.threshold": "La valeur est en dehors de sa plage de référence.",
   "cause.trend": "La valeur s'écarte beaucoup de vos valeurs habituelles.",
   "cause.synergy": "Deux indicateurs sont dégradés en même temps.",
@@ -246,7 +291,6 @@ const Map<String, String> kFr = {
   "home.start": "Enregistrez votre première mesure pour voir votre état.",
   "home.combined": "Risque combiné",
   "home.add": "Ajouter une mesure",
-
   "sync.title": "Sauvegarde en ligne",
   "sync.ok": "Toutes les données sont sauvegardées en ligne.",
   "sync.pending":
@@ -282,13 +326,12 @@ const Map<String, String> kFr = {
   "alerts.past": "Alertes résolues",
   "alert.value": "Valeur mesurée",
   "alert.cause": "Pourquoi cette alerte",
-  "alert.reco": "Actions recommandées",
-  "alert.protocol": "Protocole d'urgence",
   "alert.ack": "Actions faites : acquitter",
   "alert.acked": "Alerte acquittée. Faites une mesure de contrôle.",
   "alert.control": "Faire une mesure de contrôle",
   "alert.ground": "Mentionnez-le dans votre prochain rapport aux médecins de vol.",
   "settings.profile": "Mon profil",
+
   "settings.language": "Langue",
   "settings.theme": "Thème sombre",
   "settings.environment": "Environnement de mission",
@@ -330,14 +373,6 @@ const Map<String, String> kFr = {
   "ind.heartRate.space":
       "En apesanteur, le cœur travaille autrement et peut se "
       "déconditionner.",
-  "ind.heartRate.attention":
-
-      "Reposez-vous 10 minutes et mesurez à nouveau. Buvez de "
-      "l'eau. Évitez l'effort d'ici là.",
-  "ind.heartRate.critical":
-      "Arrêtez toute activité et restez immobile."
-      "|Prévenez un coéquipier tout de suite.|Mesurez à nouveau après 5 minutes."
-      "|Suivez l'officier médical et préparez un rapport pour les médecins de vol.",
   "ind.temperature.name": "Température corporelle",
   "ind.temperature.what": "Température du corps, en degrés Celsius.",
   "ind.temperature.how":
@@ -346,15 +381,6 @@ const Map<String, String> kFr = {
   "ind.temperature.space":
       "L'immunité change dans l'espace : une fièvre peut révéler une "
       "infection dans la cabine fermée.",
-  "ind.temperature.attention":
-      "Reposez-vous, buvez de l'eau et mesurez à nouveau dans "
-      "une heure. Limitez les contacts avec l'équipage.",
-  "ind.temperature.critical":
-      "Prévenez l'officier médical tout de suite."
-      "|Reposez-vous et hydratez-vous."
-      "|Fièvre : découvrez-vous et rafraîchissez-vous. Trop froid : réchauffez-vous avec "
-      "des couvertures.|Mesurez toutes les 30 minutes."
-      "|Préparez un rapport pour les médecins de vol.",
   "ind.sleepDuration.name": "Sommeil",
   "ind.sleepDuration.what": "Heures dormies pendant la dernière période de sommeil.",
   "ind.sleepDuration.how":
@@ -363,26 +389,94 @@ const Map<String, String> kFr = {
   "ind.sleepDuration.space":
       "L'absence de jour et de nuit naturels, le bruit et la charge "
       "de travail raccourcissent le sommeil.",
-  "ind.sleepDuration.attention":
-      "Baissez la lumière une heure avant de dormir, évitez les "
-      "écrans et gardez un horaire fixe.",
-  "ind.sleepDuration.critical":
-      "Prévenez le commandant : la fatigue est un risque pour la "
-      "sécurité.|Reportez les tâches critiques comme le pilotage ou les sorties."
-      "|Prévoyez une période de sommeil de récupération aujourd'hui."
-      "|Mentionnez-le dans votre rapport aux médecins de vol.",
   "ind.mood.name": "Humeur",
   "ind.mood.what": "Votre propre note de votre humeur, de 1 (très basse) à 5 (très bonne).",
   "ind.mood.how": "Répondez honnêtement : comment vous sentez-vous maintenant ?",
   "ind.mood.space":
       "L'isolement, le confinement et l'éloignement de la famille pèsent sur "
       "le moral.",
-  "ind.mood.attention":
-      "Faites une pause, une activité qui vous plaît, et parlez à un "
-      "coéquipier.",
-  "ind.mood.critical":
-      "Ne restez pas seul : parlez tout de suite à un coéquipier de "
-      "confiance.|Prévenez l'officier médical."
-      "|Demandez une conférence privée avec l'équipe de soutien au sol."
-      "|Allégez votre planning d'aujourd'hui.",
+  "alert.reco": "Suivi",
+  "aid.title": "Premiers secours",
+  "aid.guide": "Guide de premiers secours",
+  "aid.guide.hint": "Quoi faire, étape par étape. Fonctionne sans connexion.",
+  "aid.intro":
+      "Pour chaque situation que l'application peut détecter : les premiers gestes à "
+      "faire, et les signes qui imposent d'appeler l'officier médical.",
+  "aid.urgent": "Prévenez l'officier médical tout de suite si",
+  "aid.critical":
+      "Valeur critique : prévenez l'officier médical tout de suite, puis suivez ces "
+      "étapes.",
+  "aid.ref": "Référence NASA HRP",
+  "aid.source":
+      "Gestes généraux de premiers secours, reliés aux risques listés par le Human "
+      "Research Program de la NASA. Ils ne remplacent ni l'officier médical ni les "
+      "médecins de vol.",
+  "aid.generic.steps":
+      "Reposez-vous 10 minutes.|Faites une mesure de contrôle.|Si la valeur reste "
+      "inhabituelle, prévenez l'officier médical.",
+  "aid.heartRate.high.title": "Cœur rapide au repos",
+  "aid.heartRate.high.steps":
+
+      "Arrêtez tout effort et restez immobile.|Respirez lentement pendant 5 minutes : "
+      "inspirez 4 secondes, expirez 6 secondes.|Buvez de l'eau.|Évitez le café et les "
+      "autres excitants.|Mesurez à nouveau après 10 minutes.",
+  "aid.heartRate.high.urgent":
+      "vous avez une douleur dans la poitrine, vous êtes essoufflé, vous vous sentez "
+      "près de vous évanouir, ou la fréquence reste au-dessus de 120 bpm après le "
+      "repos.",
+  "aid.heartRate.low.title": "Cœur lent",
+  "aid.heartRate.low.steps":
+      "Arrêtez l'activité et attachez-vous.|Observez-vous : vertiges, faiblesse, "
+      "confusion ?|Demandez à un coéquipier de rester avec vous.|Mesurez à nouveau "
+      "après 5 minutes.|Aucun symptôme : un cœur lent peut être normal chez une "
+      "personne entraînée.",
+  "aid.heartRate.low.urgent":
+      "vous avez des vertiges, un malaise, une douleur dans la poitrine, ou la "
+      "fréquence est en dessous de 40 bpm.",
+  "aid.temperature.high.title": "Fièvre ou coup de chaleur",
+  "aid.temperature.high.steps":
+      "Arrêtez le travail physique et reposez-vous.|Buvez de l'eau souvent, par "
+      "petites quantités.|Enlevez les couches en trop et rafraîchissez la peau avec "
+      "un linge humide.|Limitez les contacts avec l'équipage et lavez-vous les mains "
+      ": c'est peut-être une infection.|Mesurez à nouveau toutes les 30 minutes.",
+  "aid.temperature.high.urgent":
+      "la température atteint 38,5 °C ou plus, vous êtes confus, vous avez la nuque "
+      "raide ou du mal à respirer, ou la fièvre dure plus d'un jour.",
+  "aid.temperature.low.title": "Température du corps basse",
+  "aid.temperature.low.steps":
+      "Mettez des vêtements secs et chauds et couvrez-vous la tête.|Prenez une "
+      "boisson chaude.|Bougez doucement pour vous réchauffer.|Vérifiez la température "
+      "de la cabine.|Mesurez à nouveau après 30 minutes.",
+  "aid.temperature.low.urgent":
+      "la température est en dessous de 35 °C, vous frissonnez fortement, vous êtes "
+      "confus ou vous avez du mal à parler.",
+  "aid.sleepDuration.low.title": "Manque de sommeil",
+  "aid.sleepDuration.low.steps":
+      "Dites à vos coéquipiers que vous êtes fatigué avant toute tâche à "
+      "risque.|Reportez les tâches critiques, ou demandez à un coéquipier de vérifier "
+      "votre travail.|Faites une sieste de 20 à 30 minutes.|Pas de café dans les 6 "
+      "heures avant de dormir.|Baissez la lumière et arrêtez les écrans une heure "
+      "avant de dormir, et gardez des horaires fixes.",
+  "aid.sleepDuration.low.urgent":
+      "vous dormez moins de 5 heures depuis plusieurs nuits, vous vous endormez "
+      "pendant les tâches, ou vous faites des erreurs inhabituelles.",
+  "aid.sleepDuration.high.title": "Sommeil anormalement long",
+  "aid.sleepDuration.high.steps":
+      "Après une journée lourde, un long sommeil peut être une simple "
+      "récupération.|Vérifiez vos autres indicateurs : température et "
+      "humeur.|Exposez-vous à une lumière vive et faites de l'exercice peu après le "
+      "réveil.|Gardez des heures fixes de coucher et de lever.",
+  "aid.sleepDuration.high.urgent":
+      "le long sommeil dure plusieurs jours, ou s'accompagne d'une humeur basse ou de "
+      "fièvre.",
+  "aid.mood.low.title": "Humeur basse",
+  "aid.mood.low.steps":
+      "Faites une pause de 15 minutes.|Parlez à un coéquipier de confiance.|Faites "
+      "une activité qui vous plaît : musique, photos, messages de la famille, soin "
+      "des plantes.|Faites de l'exercice : cela améliore l'humeur.|Écrivez quelques "
+      "lignes dans votre journal.",
+  "aid.mood.low.urgent":
+      "votre humeur est à 1, elle reste basse plusieurs jours, vous perdez l'intérêt "
+      "pour tout, ou vous pensez à vous faire du mal. Demandez aussi une conférence "
+      "privée avec l'équipe au sol.",
 };

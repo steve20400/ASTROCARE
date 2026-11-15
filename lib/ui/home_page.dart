@@ -1,10 +1,11 @@
-// Home: who I am, how I am, and my four indicators. Nothing else.
+// Home: who I am, how I am, my four indicators, and the first-aid guide.
  
 import 'package:flutter/material.dart';
  
 import '../app/app_state.dart';
 import '../domain/catalog.dart';
 import '../domain/models.dart';
+import 'first_aid_page.dart';
 import 'indicator_page.dart';
 import 'theme.dart';
 import 'widgets.dart';
@@ -18,13 +19,29 @@ Widget buildHomePage(BuildContext context) {
   return ListView(
     padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
     children: [
-      Text(
-        t('home.hello', [session?.name ?? '']),
-        style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700),
+      Container(
+        padding: const EdgeInsets.all(18),
+        decoration: BoxDecoration(
+          gradient: kBrandGradient,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              t('home.hello', [session?.name ?? '']),
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 22,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            if ((session?.role ?? '').isNotEmpty)
+              Text(session!.role, style: const TextStyle(color: Colors.white, fontSize: 15)),
+          ],
+        ),
       ),
-      if ((session?.role ?? '').isNotEmpty)
-        Text(session!.role, style: TextStyle(color: scheme.primary)),
-      const SizedBox(height: 16),
+      const SizedBox(height: 12),
       Card(
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -59,6 +76,7 @@ Widget buildHomePage(BuildContext context) {
               children: [
                 Expanded(child: _IndicatorCard(indicator: kIndicators[row])),
                 const SizedBox(width: 4),
+
                 Expanded(
                   child: row + 1 < kIndicators.length
                       ? _IndicatorCard(indicator: kIndicators[row + 1])
@@ -68,6 +86,19 @@ Widget buildHomePage(BuildContext context) {
             ),
           ),
         ),
+      const SizedBox(height: 4),
+      Card(
+        clipBehavior: Clip.antiAlias,
+        child: ListTile(
+          leading: Icon(Icons.medical_services_outlined, color: scheme.primary),
+          title: Text(t('aid.guide'), style: const TextStyle(fontWeight: FontWeight.w700)),
+          subtitle: Text(t('aid.guide.hint')),
+          trailing: const Icon(Icons.chevron_right),
+          onTap: () => Navigator.of(
+            context,
+          ).push(MaterialPageRoute<void>(builder: (_) => const FirstAidPage())),
+        ),
+      ),
     ],
   );
 }
@@ -76,7 +107,7 @@ class _CombinedRisk extends StatelessWidget {
   final SynergyRule rule;
  
   const _CombinedRisk({required this.rule});
-
+ 
   @override
   Widget build(BuildContext context) {
     final color = levelColor(context, rule.level);
@@ -118,6 +149,7 @@ class _IndicatorCard extends StatelessWidget {
   final Indicator indicator;
  
   const _IndicatorCard({required this.indicator});
+ 
   @override
   Widget build(BuildContext context) {
     final last = appState.latest(indicator.code);
@@ -129,6 +161,7 @@ class _IndicatorCard extends StatelessWidget {
         onTap: () => Navigator.of(
           context,
         ).push(MaterialPageRoute<void>(builder: (_) => IndicatorPage(code: indicator.code))),
+
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -161,7 +194,6 @@ class _IndicatorCard extends StatelessWidget {
               ),
             ),
           ],
-
         ),
       ),
     );

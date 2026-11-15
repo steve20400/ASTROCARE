@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import '../app/app_state.dart';
 import '../data/remote_api.dart';
 import 'theme.dart';
+import 'widgets.dart';
  
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -74,7 +75,6 @@ class _LoginPageState extends State<LoginPage> {
     prefixIcon: Icon(icon),
     border: const OutlineInputBorder(),
   );
- 
   @override
 
   Widget build(BuildContext context) {
@@ -107,16 +107,13 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  Icon(Icons.health_and_safety, size: 64, color: scheme.primary),
-                  const SizedBox(height: 8),
-                  Text(
-                    'AstroCare',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.w800,
-                      color: isDark(context) ? kLightBlue : kNasaBlue,
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 22),
+                    decoration: BoxDecoration(
+                      gradient: kBrandGradient,
+                      borderRadius: BorderRadius.circular(20),
                     ),
+                    child: const Center(child: AppLogo(height: 120)),
                   ),
                   const SizedBox(height: 20),
                   Text(
@@ -161,10 +158,10 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   if (_error != null) ...[
                     const SizedBox(height: 12),
-
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+
                         Icon(Icons.error_outline, size: 20, color: scheme.error),
                         const SizedBox(width: 8),
                         Expanded(

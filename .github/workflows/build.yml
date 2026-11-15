@@ -26,13 +26,17 @@ jobs:
  
       - name: Allow internet access (sign-in and online backup)
         run: >-
+          grep -q android.permission.INTERNET android/app/src/main/AndroidManifest.xml ||
           sed -i
           's|<application|<uses-permission android:name="android.permission.INTERNET"/><application|'
           android/app/src/main/AndroidManifest.xml
  
+      - name: Prepare the assets folder and download the brand font
+        run: mkdir -p assets && bash tool/get_fonts.sh
+        continue-on-error: true
+ 
       - name: Remove the default template test
         run: rm -f test/widget_test.dart
- 
       - name: Get dependencies
         run: flutter pub get
  
