@@ -9,6 +9,7 @@ import 'package:share_plus/share_plus.dart';
 import '../app/app_state.dart';
 import '../domain/models.dart';
 import 'theme.dart';
+import 'transmission_page.dart';
 import 'widgets.dart';
  
 const List<List<String>> _resources = [
@@ -75,8 +76,8 @@ void _confirmSignOut(BuildContext context) {
         ),
       ],
     ),
-  );
 
+  );
 }
 Widget buildSettingsPage(BuildContext context) {
   final scheme = Theme.of(context).colorScheme;
@@ -116,9 +117,23 @@ Widget buildSettingsPage(BuildContext context) {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: Icon(Icons.satellite_alt, color: scheme.primary),
+                title: Text(
+                  t('tx.title'),
+                  style: const TextStyle(fontWeight: FontWeight.w700),
+                ),
+                subtitle: Text(t('tx.open.hint', [appState.queuedReports])),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => Navigator.of(
+                  context,
+                ).push(MaterialPageRoute<void>(builder: (_) => const TransmissionPage())),
+              ),
+              const Divider(height: 20),
               Text(t('report.hint'), style: const TextStyle(height: 1.35)),
               const SizedBox(height: 12),
-              FilledButton.icon(
+              OutlinedButton.icon(
                 onPressed: () => _shareReport(context),
                 icon: const Icon(Icons.picture_as_pdf_outlined),
                 label: Padding(
@@ -146,6 +161,7 @@ Widget buildSettingsPage(BuildContext context) {
                 ],
               ),
               if (lastSync != null) ...[
+
                 const SizedBox(height: 6),
                 Text(
                   t('sync.last', [appState.formatDate(lastSync)]),
@@ -161,7 +177,6 @@ Widget buildSettingsPage(BuildContext context) {
                 OutlinedButton.icon(
                   onPressed: appState.syncing ? null : () => appState.sync(),
                   icon: const Icon(Icons.sync),
-
                   label: Text(t('sync.now')),
                 ),
               ],
@@ -231,6 +246,7 @@ Widget buildSettingsPage(BuildContext context) {
                 borderRadius: BorderRadius.circular(14),
               ),
               child: const Center(child: AppLogo(height: 84)),
+
             ),
             const SizedBox(height: 12),
             Text(t('about.team'), style: const TextStyle(fontWeight: FontWeight.w700)),
@@ -246,7 +262,6 @@ Widget buildSettingsPage(BuildContext context) {
                   children: [
                     Text(r[0], style: const TextStyle(fontSize: 13)),
                     SelectableText(r[1], style: TextStyle(fontSize: 12, color: scheme.primary)),
-
                   ],
                 ),
               ),

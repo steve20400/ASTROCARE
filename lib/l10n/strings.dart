@@ -111,7 +111,7 @@ const Map<String, String> kEn = {
   "settings.logout.warn": "Signing in again needs the internet. Do not sign out in space.",
   "settings.logout.pending": "{0} item(s) are not saved online yet.",
   "report.title": "Health report",
-  "report.button": "Create the PDF report",
+  "report.button": "Share the full PDF report",
   "report.hint":
       "The PDF is created on this device, without the internet. Send it to the "
       "ground through the usual channel.",
@@ -282,8 +282,86 @@ const Map<String, String> kEn = {
   "trend.max": "Highest",
   "trend.count": "{0} measurement(s) in this period",
   "trend.none": "No measurement in this period.",
+  "tx.title": "Transmission to the ground",
+  "tx.open.hint": "Automatic reports and link with the ground. {0} report(s) waiting on board.",
+  "tx.link": "Link with the ground",
+  "tx.simulated": "Simulated link",
+  "tx.space": "Spacecraft",
+  "tx.ground": "Ground",
+  "tx.linkdown": "Link cut",
+  "tx.waiting": "{0} waiting",
+  "tx.received": "{0} received",
+  "tx.status.down": "Link cut: {0} report(s) stay on board until it comes back.",
+  "tx.status.idle": "Link open. Nothing to send.",
+  "tx.status.sending": "Sending report {0}. {1}",
+  "tx.number": "No. {0}",
+  "tx.auto.title": "Automatic report",
+  "tx.auto.text":
+      "After each measurement the app waits. If no other measurement comes during "
+      "that time, it creates a PDF report with the new measurements and the latest "
+      "value of each indicator, and puts it in the queue for the ground.",
+  "tx.auto.delay": "Waiting time after the last measurement",
+  "tx.delay.30": "30 s (demo)",
+  "tx.delay.600": "10 min",
+  "tx.delay.3600": "1 h",
+  "tx.auto.next": "Next report in {0} ({1} new measurement(s))",
+  "tx.auto.none": "No new measurement is waiting.",
+  "tx.auto.closed":
+      "If the app is closed when the time comes, the report is created as soon as it "
+      "is opened again.",
+  "tx.now": "Create a report now",
+  "tx.reports": "Reports",
+  "tx.reports.none": "No report yet. Record a measurement.",
+  "tx.r.auto": "automatic",
+  "tx.r.manual": "manual",
+  "tx.r.line": "{0} | {1} new measurement(s) | {2}",
+  "tx.r.wait": "Waiting on board",
+  "tx.r.sending": "Being sent",
+  "tx.r.sent": "Received by the ground: {0} | {1} packets, {2} sent again",
+  "tx.kb": "{0} KB",
+  "tx.share": "Share this PDF",
+  "tx.log": "Protocol log",
+  "tx.log.none": "No transfer yet.",
+  "tx.ev.md": "Metadata: file {0}, {1} bytes, signature attached",
+  "tx.ev.fd": "File Data {0}/{1}: bytes {2} to {3}",
+  "tx.ev.lost": "lost on the link",
+  "tx.ev.eof": "EOF: end of file, checksum sent",
+  "tx.ev.ackeof": "ACK: the ground confirms the EOF",
+  "tx.ev.nak": "NAK: the ground asks again for bytes {0} to {1}",
+  "tx.ev.refd": "File Data {0}/{1} sent again",
+  "tx.ev.fin": "Finished: file complete and valid",
+  "tx.ev.finbad": "Finished: file refused",
+
+  "tx.ev.ackfin": "ACK: the spacecraft closes the transfer",
+  "tx.log.ok":
+      "Ground station: checksum correct, signature valid, report decrypted. "
+      "Fingerprint {0}",
+  "tx.sec.title": "Protocol and security",
+  "tx.sec.cfdp":
+      "File transfer: CCSDS File Delivery Protocol, class 2 (CCSDS 727.0-B). It "
+      "replaced the older SCPS file protocol. A lost part is asked again, so the file "
+      "always arrives whole.",
+  "tx.sec.packet":
+      "Each message travels in a CCSDS Space Packet (CCSDS 133.0-B) ended by a "
+      "CRC-16: a damaged packet is refused.",
+  "tx.sec.cipher":
+      "The report is encrypted with ChaCha20 before it leaves: it cannot be read on "
+      "the link.",
+  "tx.sec.sign":
+      "It is signed with HMAC-SHA-256 and the mission key: the ground checks who sent "
+      "it and that nothing changed.",
+  "tx.sec.limit":
+      "The radio link is simulated inside the app: the delay is compressed and one "
+      "packet is lost on purpose. Sharing the mission key with a real ground station "
+      "is not done in this prototype.",
+  "tx.pdf.auto":
+      "Automatic report: created after the waiting time that follows the last "
+      "measurement.",
+  "tx.pdf.manual": "Report created by the astronaut.",
+  "tx.pdf.new": "New measurements since the last report ({0})",
+  "tx.pdf.nonew": "No new measurement.",
+  "tx.pdf.latest": "Latest value of each indicator",
 };
- 
 const Map<String, String> kFr = {
   "nav.home": "Accueil",
   "nav.alerts": "Alertes",
@@ -331,7 +409,6 @@ const Map<String, String> kFr = {
   "err.EMAIL_NOT_CONFIRMED": "Ce compte doit d'abord être confirmé par e-mail.",
   "err.OVER_REQUEST_RATE_LIMIT": "Trop d'essais. Attendez une minute et réessayez.",
   "err.PERMISSION_DENIED": "Accès refusé par la base en ligne.",
-
   "err.TABLE_MISSING": "Les tables en ligne sont absentes. Exécutez supabase/schema.sql.",
   "err.generic": "Une erreur est survenue ({0}). Réessayez.",
   "home.hello": "Bonjour, {0}",
@@ -339,6 +416,7 @@ const Map<String, String> kFr = {
   "home.nodata": "Pas encore mesuré",
   "home.start": "Enregistrez votre première mesure pour voir votre état.",
   "home.combined": "Risque combiné",
+
   "home.add": "Ajouter une mesure",
   "sync.title": "Sauvegarde en ligne",
   "sync.ok": "Toutes les données sont sauvegardées en ligne.",
@@ -388,7 +466,7 @@ const Map<String, String> kFr = {
       "l'espace.",
   "settings.logout.pending": "{0} élément(s) ne sont pas encore sauvegardés en ligne.",
   "report.title": "Rapport de santé",
-  "report.button": "Créer le rapport PDF",
+  "report.button": "Partager le rapport PDF complet",
   "report.hint":
       "Le PDF est créé sur cet appareil, sans Internet. Envoyez-le au sol par "
       "le canal habituel.",
@@ -416,7 +494,6 @@ const Map<String, String> kFr = {
   "ind.heartRate.what": "Nombre de battements du cœur par minute, au repos.",
   "ind.heartRate.how":
       "Restez immobile 5 minutes. Utilisez l'oxymètre, ou comptez le "
-
       "pouls au poignet pendant 60 secondes.",
   "ind.heartRate.space":
       "En apesanteur, le cœur travaille autrement et peut se "
@@ -424,6 +501,7 @@ const Map<String, String> kFr = {
   "ind.temperature.name": "Température corporelle",
   "ind.temperature.what": "Température du corps, en degrés Celsius.",
   "ind.temperature.how":
+
       "Utilisez le thermomètre comme indiqué et restez immobile "
       "jusqu'au bip.",
   "ind.temperature.space":
@@ -501,7 +579,6 @@ const Map<String, String> kFr = {
   "aid.sleepDuration.low.steps":
       "Dites à vos coéquipiers que vous êtes fatigué avant toute tâche à "
       "risque.|Reportez les tâches critiques, ou demandez à un coéquipier de vérifier "
-
       "votre travail.|Faites une sieste de 20 à 30 minutes.|Pas de café dans les 6 "
       "heures avant de dormir.|Baissez la lumière et arrêtez les écrans une heure "
       "avant de dormir, et gardez des horaires fixes.",
@@ -509,6 +586,7 @@ const Map<String, String> kFr = {
       "vous dormez moins de 5 heures depuis plusieurs nuits, vous vous endormez "
       "pendant les tâches, ou vous faites des erreurs inhabituelles.",
   "aid.sleepDuration.high.title": "Sommeil anormalement long",
+
   "aid.sleepDuration.high.steps":
       "Après une journée lourde, un long sommeil peut être une simple "
       "récupération.|Vérifiez vos autres indicateurs : température et "
@@ -579,4 +657,86 @@ const Map<String, String> kFr = {
   "trend.max": "Plus haut",
   "trend.count": "{0} mesure(s) sur cette période",
   "trend.none": "Aucune mesure sur cette période.",
+  "tx.title": "Transmission vers le sol",
+  "tx.open.hint":
+      "Rapports automatiques et liaison avec le sol. {0} rapport(s) en attente à "
+      "bord.",
+  "tx.link": "Liaison avec le sol",
+  "tx.simulated": "Liaison simulée",
+  "tx.space": "Vaisseau",
+  "tx.ground": "Sol",
+  "tx.linkdown": "Liaison coupée",
+  "tx.waiting": "{0} en attente",
+  "tx.received": "{0} reçu(s)",
+  "tx.status.down": "Liaison coupée : {0} rapport(s) restent à bord jusqu'à son retour.",
+  "tx.status.idle": "Liaison ouverte. Rien à envoyer.",
+  "tx.status.sending": "Envoi du rapport {0}. {1}",
+
+  "tx.number": "n° {0}",
+  "tx.auto.title": "Rapport automatique",
+  "tx.auto.text":
+      "Après chaque mesure, l'application attend. Si aucune autre mesure n'arrive "
+      "pendant ce temps, elle crée un rapport PDF avec les nouvelles mesures et la "
+      "dernière valeur de chaque indicateur, puis le met dans la file d'attente pour "
+      "le sol.",
+  "tx.auto.delay": "Attente après la dernière mesure",
+  "tx.delay.30": "30 s (démo)",
+  "tx.delay.600": "10 min",
+  "tx.delay.3600": "1 h",
+  "tx.auto.next": "Prochain rapport dans {0} ({1} nouvelle(s) mesure(s))",
+  "tx.auto.none": "Aucune nouvelle mesure en attente.",
+  "tx.auto.closed":
+      "Si l'application est fermée à l'échéance, le rapport est créé dès sa "
+      "réouverture.",
+  "tx.now": "Créer un rapport maintenant",
+  "tx.reports": "Rapports",
+  "tx.reports.none": "Aucun rapport pour l'instant. Enregistrez une mesure.",
+  "tx.r.auto": "automatique",
+  "tx.r.manual": "manuel",
+  "tx.r.line": "{0} | {1} nouvelle(s) mesure(s) | {2}",
+  "tx.r.wait": "En attente à bord",
+  "tx.r.sending": "Envoi en cours",
+  "tx.r.sent": "Reçu par le sol : {0} | {1} paquets, {2} renvoyé(s)",
+  "tx.kb": "{0} Ko",
+  "tx.share": "Partager ce PDF",
+  "tx.log": "Journal du protocole",
+  "tx.log.none": "Aucun transfert pour l'instant.",
+  "tx.ev.md": "Metadata : fichier {0}, {1} octets, signature jointe",
+  "tx.ev.fd": "File Data {0}/{1} : octets {2} à {3}",
+  "tx.ev.lost": "perdu sur la liaison",
+  "tx.ev.eof": "EOF : fin du fichier, somme de contrôle envoyée",
+  "tx.ev.ackeof": "ACK : le sol confirme l'EOF",
+  "tx.ev.nak": "NAK : le sol redemande les octets {0} à {1}",
+  "tx.ev.refd": "File Data {0}/{1} renvoyé",
+  "tx.ev.fin": "Finished : fichier complet et valide",
+  "tx.ev.finbad": "Finished : fichier refusé",
+  "tx.ev.ackfin": "ACK : le vaisseau clôt le transfert",
+  "tx.log.ok":
+      "Station sol : somme de contrôle correcte, signature valide, rapport déchiffré. "
+      "Empreinte {0}",
+  "tx.sec.title": "Protocole et sécurité",
+  "tx.sec.cfdp":
+      "Transfert de fichier : CCSDS File Delivery Protocol, classe 2 (CCSDS 727.0-B). "
+      "Il a remplacé l'ancien protocole de fichiers SCPS. Une partie perdue est "
+      "redemandée : le fichier arrive toujours entier.",
+  "tx.sec.packet":
+      "Chaque message voyage dans un paquet CCSDS Space Packet (CCSDS 133.0-B) "
+      "terminé par un CRC-16 : un paquet abîmé est refusé.",
+  "tx.sec.cipher":
+      "Le rapport est chiffré avec ChaCha20 avant de partir : il est illisible sur la "
+      "liaison.",
+  "tx.sec.sign":
+      "Il est signé avec HMAC-SHA-256 et la clé de mission : le sol vérifie qui l'a "
+      "envoyé et que rien n'a changé.",
+  "tx.sec.limit":
+      "La liaison radio est simulée dans l'application : le délai est compressé et un "
+      "paquet est perdu exprès. Le partage de la clé de mission avec une vraie "
+      "station sol n'est pas fait dans ce prototype.",
+  "tx.pdf.auto":
+      "Rapport automatique : créé après le temps d'attente qui suit la dernière "
+      "mesure.",
+  "tx.pdf.manual": "Rapport créé par l'astronaute.",
+  "tx.pdf.new": "Nouvelles mesures depuis le dernier rapport ({0})",
+  "tx.pdf.nonew": "Aucune nouvelle mesure.",
+  "tx.pdf.latest": "Dernière valeur de chaque indicateur",
 };

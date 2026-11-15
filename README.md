@@ -17,7 +17,12 @@ Team **Falcon Health** - NASA Space Apps Challenge 2026, challenge
 - Alerts with step-by-step first aid, chosen from the indicator and the direction of the
   deviation, and the warning signs that require the medical officer.
 - A built-in first-aid guide, readable at any time without connection.
-- A **PDF health report** built on the device, to send to the ground through the usual channel.
+- **Automatic reports**: ten minutes after the last measurement, a PDF report is created
+  with the new measurements and queued for the ground. A full report can also be shared.
+- **Simulated downlink**: the queued reports cross a simulated link with the CCSDS File
+  Delivery Protocol (class 2) in CCSDS Space Packets. One packet is lost on purpose and
+  repaired. Reports are encrypted (ChaCha20) and signed (HMAC-SHA-256); the simulated
+  ground station checks and decrypts them. The radio link itself is not real.
 - When the internet is available again, the data is backed up to the online database.
 - English and French. Light and dark themes.
  
@@ -33,7 +38,6 @@ Team **Falcon Health** - NASA Space Apps Challenge 2026, challenge
 2. SQL Editor: run `supabase/schema.sql` (three tables and their security policies).
 3. Authentication > Sign In / Providers: turn off "Confirm email".
 4. "Connect" button: copy the project URL and the publishable key into `lib/config.dart`.
- 
 ## Visual identity
  
 - Colors: NASA Space Apps brand guidelines (June 2026). Blues dominate, Neon Yellow is

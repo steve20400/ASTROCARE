@@ -2,6 +2,8 @@
 // Rule: every action first writes to the local database, then tries the online one.
  
 import 'dart:async';
+import 'dart:convert';
+import 'dart:math';
  
 import 'package:flutter/foundation.dart';
  
@@ -10,6 +12,8 @@ import '../data/remote_api.dart';
 import '../data/simple_pdf.dart';
 import '../domain/analysis.dart';
 import '../domain/catalog.dart';
+import '../domain/ccsds.dart';
+import '../domain/crypto.dart';
 import '../domain/models.dart';
 import '../l10n/strings.dart';
  
@@ -33,11 +37,38 @@ class AppState extends ChangeNotifier {
   List<HealthAlert> alerts = [];
  
   bool syncing = false;
- 
   /// True when the last attempt to reach the online database failed.
   bool lastSyncFailed = false;
   DateTime? lastSyncAt;
   int _seq = 0;
+ 
+  // Reports for the ground. They are created on board, kept in [reports], and sent
+  // through the simulated link when it is up.
+  List<Report> reports = [];
+ 
+  /// Waiting time after the last measurement before a report is created, in seconds.
+  int reportDelay = 600;
+ 
+  /// When the next automatic report is due. Null when no new measurement is waiting.
+  DateTime? reportDueAt;
+  DateTime? lastReportAt;
+ 
+  /// State of the simulated link with the ground.
+  bool linkUp = false;
+ 
+  /// Key shared with the ground before the mission, in hexadecimal.
+  String missionKey = '';
+ 
+  /// The transfer in progress, with the moment it started.
+  TransferPlan? transfer;
+  DateTime? transferStart;
+  String? transferReportId;
+ 
+  /// The last finished transfer, kept for the protocol log.
+  TransferPlan? lastTransfer;
+  Timer? _reportTimer;
+  Timer? _transferTimer;
+ 
   bool get signedIn => session != null;
  
   // ------------------------------------------------------------- local database
@@ -45,6 +76,7 @@ class AppState extends ChangeNotifier {
   Future<void> load() async {
     final device = await _local.readDevice();
     if (device != null) {
+
       lang = device['lang'] == 'fr' ? 'fr' : 'en';
       darkMode = device['darkMode'] == true;
       final s = device['session'];
@@ -60,6 +92,8 @@ class AppState extends ChangeNotifier {
     loaded = true;
     notifyListeners();
     unawaited(sync());
+    checkReportDue();
+    _pumpLink();
   }
  
   Future<void> _loadUser(String uid) async {
@@ -67,6 +101,14 @@ class AppState extends ChangeNotifier {
     alerts = [];
     environment = MissionEnvironment.spacecraft;
     lastSyncAt = null;
+    _stopTimers();
+    reports = [];
+    reportDelay = 600;
+    reportDueAt = null;
+    lastReportAt = null;
+    linkUp = false;
+    missionKey = '';
+    lastTransfer = null;
     final data = await _local.readUser(uid);
     if (data == null) return;
     try {
@@ -76,7 +118,6 @@ class AppState extends ChangeNotifier {
         MissionEnvironment.spacecraft,
       );
       measurements = [
-
         for (final e in (data['measurements'] as List? ?? const []))
           Measurement.fromJson(Map<String, dynamic>.from(e as Map)),
       ];
@@ -85,6 +126,15 @@ class AppState extends ChangeNotifier {
           HealthAlert.fromJson(Map<String, dynamic>.from(e as Map)),
       ];
       lastSyncAt = DateTime.tryParse('${data['lastSyncAt']}');
+      reports = [
+        for (final e in (data['reports'] as List? ?? const []))
+          Report.fromJson(Map<String, dynamic>.from(e as Map)),
+      ];
+      reportDelay = (data['reportDelay'] as num?)?.toInt() ?? 600;
+      reportDueAt = DateTime.tryParse('${data['reportDueAt']}');
+      lastReportAt = DateTime.tryParse('${data['lastReportAt']}');
+      linkUp = data['linkUp'] == true;
+      missionKey = '${data['missionKey'] ?? ''}';
     } catch (_) {
       measurements = [];
       alerts = [];
@@ -102,10 +152,16 @@ class AppState extends ChangeNotifier {
       'measurements': measurements.map((m) => m.toJson()).toList(),
       'alerts': alerts.map((a) => a.toJson()).toList(),
       'lastSyncAt': lastSyncAt?.toIso8601String(),
+      'reports': reports.map((r) => r.toJson()).toList(),
+      'reportDelay': reportDelay,
+      'reportDueAt': reportDueAt?.toIso8601String(),
+      'lastReportAt': lastReportAt?.toIso8601String(),
+      'linkUp': linkUp,
+      'missionKey': missionKey,
     });
   }
- 
   void _changed() {
+
     unawaited(_saveUser());
     notifyListeners();
   }
@@ -157,11 +213,11 @@ class AppState extends ChangeNotifier {
       ),
     );
   }
+ 
   Future<void> _open(Session s) async {
     session = s;
     await _loadUser(s.uid);
     lastSyncFailed = false;
-
     await _saveDevice();
     notifyListeners();
   }
@@ -172,6 +228,9 @@ class AppState extends ChangeNotifier {
     session = null;
     measurements = [];
     alerts = [];
+    _stopTimers();
+    reports = [];
+    reportDueAt = null;
     await _saveDevice();
     notifyListeners();
   }
@@ -187,6 +246,7 @@ class AppState extends ChangeNotifier {
     s.idToken = auth.accessToken;
     s.refreshToken = auth.refreshToken;
     s.idTokenExpiry = auth.expiry;
+
     await _saveDevice();
     return s.idToken;
   }
@@ -246,7 +306,7 @@ class AppState extends ChangeNotifier {
     syncing = false;
     _changed();
   }
-
+ 
   // ------------------------------------------------------------------- queries
  
   List<Hazard> get activeHazards => activeHazardsOf(environment);
@@ -271,6 +331,7 @@ class AppState extends ChangeNotifier {
   AlertLevel? levelOf(String code) {
     final m = latest(code);
     return m == null ? null : indicatorByCode(code).levelFor(m.value);
+
   }
  
   Map<String, AlertLevel> latestLevels() {
@@ -298,7 +359,6 @@ class AppState extends ChangeNotifier {
     }
     return worst;
   }
- 
   List<HealthAlert> sortedAlerts() {
     final list = alerts.toList();
     list.sort((a, b) => b.createdAt.compareTo(a.createdAt));
@@ -331,7 +391,6 @@ class AppState extends ChangeNotifier {
     measurements.add(measurement);
  
     final result = _engine.analyze(
-
       indicator: indicator,
       value: value,
       history: previous,
@@ -357,10 +416,15 @@ class AppState extends ChangeNotifier {
           ruleId: result.cause == AlertCause.synergy && result.synergies.isNotEmpty
               ? result.synergies.first.id
               : '',
+
           createdAt: measurement.at,
         ),
       );
     }
+    // A report for the ground will be created once no new measurement has come
+    // for [reportDelay] seconds. Every new measurement restarts the wait.
+    reportDueAt = DateTime.now().add(Duration(seconds: reportDelay));
+    _armReportTimer();
     _changed();
     unawaited(sync());
     return result;
@@ -398,11 +462,225 @@ class AppState extends ChangeNotifier {
  
   String formatDate(DateTime d) =>
       '${_two(d.day)}/${_two(d.month)}/${d.year} ${_two(d.hour)}:${_two(d.minute)}';
-  /// Health report as a PDF file, built on the device without any network.
-  Uint8List buildReportPdf() {
+ 
+  // ---------------------------------------------------- reports for the ground
+ 
+  int get queuedReports => reports.where((r) => !r.sent).length;
+ 
+  List<Report> sortedReports() {
+    final list = reports.toList();
+    list.sort((a, b) => b.number.compareTo(a.number));
+    return list;
+  }
+ 
+  /// Measurements recorded since the last report, oldest first.
+  List<Measurement> newMeasurements() {
+    final since = lastReportAt;
+    final list = [
+      for (final m in measurements)
+        if (since == null || m.at.isAfter(since)) m,
+    ];
+    list.sort((a, b) => a.at.compareTo(b.at));
+    return list;
+  }
+ 
+  void _stopTimers() {
+    _reportTimer?.cancel();
+    _reportTimer = null;
+    _transferTimer?.cancel();
+    _transferTimer = null;
+    transfer = null;
+    transferStart = null;
+    transferReportId = null;
+  }
+ 
+  void _armReportTimer() {
+    _reportTimer?.cancel();
+    _reportTimer = null;
+    final due = reportDueAt;
+    if (due == null) return;
+    final wait = due.difference(DateTime.now());
+    _reportTimer = Timer(wait.isNegative ? Duration.zero : wait, () => createReport(auto: true));
+
+  }
+ 
+  /// Called when the app starts and each time it comes back to the screen: a report
+  /// whose time has passed while the app was closed is created at once.
+  void checkReportDue() {
+    if (reportDueAt == null) return;
+    _armReportTimer();
+  }
+ 
+  void setReportDelay(int seconds) {
+    reportDelay = seconds;
+    if (reportDueAt != null) {
+      reportDueAt = DateTime.now().add(Duration(seconds: seconds));
+      _armReportTimer();
+    }
+    _changed();
+  }
+ 
+  /// Creates a report from the new measurements and the latest value of each
+  /// indicator, and puts it in the queue for the ground.
+  Report createReport({required bool auto}) {
+    _reportTimer?.cancel();
+    _reportTimer = null;
+    final fresh = newMeasurements();
+    var number = 1;
+    for (final r in reports) {
+      if (r.number >= number) number = r.number + 1;
+    }
+    final pdf = buildTransmissionPdf(number, fresh, auto);
+    final report = Report(
+      id: _newId('r'),
+      number: number,
+      createdAt: DateTime.now(),
+      auto: auto,
+      newCount: fresh.length,
+      pdf: base64Encode(pdf),
+      digest: hex(sha256(pdf)).substring(0, 16),
+    );
+    reports.add(report);
+    // Only the 20 latest reports stay on the device.
+    reports.sort((a, b) => a.number.compareTo(b.number));
+    while (reports.length > 20) {
+      reports.removeAt(0);
+    }
+    lastReportAt = report.createdAt;
+    reportDueAt = null;
+    _changed();
+    _pumpLink();
+    return report;
+  }
+ 
+  Uint8List reportBytes(Report r) => base64Decode(r.pdf);
+ 
+  /// Opens or cuts the simulated link with the ground.
+  void setLink(bool up) {
+    linkUp = up;
+    if (!up) {
+      // A transfer cut halfway starts again from the beginning later.
+      _transferTimer?.cancel();
+      _transferTimer = null;
+      transfer = null;
+      transferStart = null;
+      transferReportId = null;
+    }
+    _changed();
+    _pumpLink();
+  }
+ 
+  List<int> _key() {
+    if (missionKey.length != 64) {
+      final random = Random.secure();
+      missionKey = hex([for (var i = 0; i < 32; i++) random.nextInt(256)]);
+    }
+    return unhex(missionKey);
+  }
+ 
+  /// Starts sending the oldest waiting report when the link is up and free.
+  void _pumpLink() {
+    if (!linkUp || transfer != null) return;
+    Report? next;
+    for (final r in reports) {
+      if (!r.sent && (next == null || r.number < next.number)) next = r;
+    }
+    if (next == null) return;
+
+    final report = next;
+    final random = Random.secure();
+    final plan = runTransfer(
+      report: reportBytes(report),
+      missionKey: _key(),
+      nonce: [for (var i = 0; i < 12; i++) random.nextInt(256)],
+      transaction: report.number & 0xFFFF,
+      fileName: report.fileName,
+    );
+    transfer = plan;
+    transferStart = DateTime.now();
+    transferReportId = report.id;
+    _transferTimer = Timer(Duration(milliseconds: plan.durationMs), () {
+      if (plan.ok) {
+        report.sent = true;
+        report.sentAt = DateTime.now();
+        report.packets = plan.packets;
+        report.resent = plan.resent;
+      }
+      lastTransfer = plan;
+      transfer = null;
+      transferStart = null;
+      transferReportId = null;
+      _transferTimer = null;
+      _changed();
+      if (plan.ok) _pumpLink();
+    });
+    _changed();
+  }
+ 
+  /// Report sent to the ground: the new measurements, then the latest value of
+  /// every indicator and the open alerts.
+  Uint8List buildTransmissionPdf(int number, List<Measurement> fresh, bool auto) {
+    final lines = _reportHeader('${t('report.title')} ${t('tx.number', [number])}');
+    lines.add(PdfLine(t(auto ? 'tx.pdf.auto' : 'tx.pdf.manual')));
+    lines.add(const PdfLine(''));
+ 
+    lines.add(PdfLine(t('tx.pdf.new', [fresh.length]), size: 13, bold: true));
+    if (fresh.isEmpty) {
+      lines.add(PdfLine(t('tx.pdf.nonew')));
+    } else {
+      for (final m in fresh) {
+        final i = indicatorByCode(m.indicator);
+        lines.add(
+          PdfLine(
+            '${formatDate(m.at)} | ${t('ind.${m.indicator}.name')}: '
+            '${i.format(m.value)} ${i.unit} | [${t('level.${i.levelFor(m.value).name}')}]',
+          ),
+        );
+      }
+    }
+    lines.add(const PdfLine(''));
+ 
+    lines.add(PdfLine(t('tx.pdf.latest'), size: 13, bold: true));
+    for (final i in kIndicators) {
+      final last = latest(i.code);
+      lines.add(
+        PdfLine(
+          last == null
+              ? '${t('ind.${i.code}.name')}: ${t('home.nodata')}'
+              : '${t('ind.${i.code}.name')}: ${i.format(last.value)} ${i.unit} | '
+                    '[${t('level.${i.levelFor(last.value).name}')}] | ${formatDate(last.at)}',
+        ),
+      );
+    }
+    lines.add(const PdfLine(''));
+ 
+    lines.add(PdfLine(t('alerts.open'), size: 13, bold: true));
+    final open = sortedAlerts().where((a) => a.isOpen).toList();
+    if (open.isEmpty) {
+      lines.add(PdfLine(t('alerts.none')));
+    } else {
+      for (final a in open) {
+        final i = indicatorByCode(a.indicator);
+        lines.add(
+          PdfLine(
+            '${formatDate(a.createdAt)} | ${t('ind.${a.indicator}.name')}: '
+            '${i.format(a.value)} ${i.unit} | ${t('level.${a.level.name}')} | '
+            '(${t('status.${a.status.name}')})',
+          ),
+        );
+      }
+    }
+    lines.add(const PdfLine(''));
+
+    lines.add(PdfLine(t('about.disclaimer'), size: 9));
+    return SimplePdf.build(lines);
+  }
+ 
+  /// First lines of every report: who, where, when, overall status.
+  List<PdfLine> _reportHeader(String title) {
     final s = session;
     final lines = <PdfLine>[
-      PdfLine('AstroCare - ${t('report.title')}', size: 18, bold: true),
+      PdfLine('AstroCare - $title', size: 18, bold: true),
       const PdfLine(''),
       PdfLine('${t('report.astronaut')}: ${s?.name ?? ''} (${s?.role ?? ''})'),
       PdfLine('${t('report.account')}: ${s?.email ?? ''}'),
@@ -416,13 +694,18 @@ class AppState extends ChangeNotifier {
         '${t('home.overall')}: ${t(overall == null ? 'level.nodata' : 'level.${overall.name}')}',
         size: 13,
         bold: true,
-
       ),
     );
     for (final r in activeSynergies()) {
       lines.add(PdfLine('${t('home.combined')}: ${t('syn.${r.id}.name')}'));
     }
     lines.add(const PdfLine(''));
+    return lines;
+  }
+ 
+  /// Full health report as a PDF file, built on the device without any network.
+  Uint8List buildReportPdf() {
+    final lines = _reportHeader(t('report.title'));
  
     for (final i in kIndicators) {
       final list = history(i.code);

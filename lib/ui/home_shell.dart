@@ -8,6 +8,7 @@ import 'alerts_page.dart';
 import 'body_page.dart';
 import 'home_page.dart';
 import 'settings_page.dart';
+import 'transmission_page.dart';
  
 class HomeShell extends StatefulWidget {
   const HomeShell({super.key});
@@ -40,7 +41,24 @@ class _HomeShellState extends State<HomeShell> {
         final openCount = appState.openAlertCount;
         final titles = [t('nav.home'), t('nav.body'), t('nav.alerts'), t('nav.settings')];
         return Scaffold(
-          appBar: AppBar(title: Text(_index == 0 ? 'AstroCare' : titles[_index])),
+          appBar: AppBar(
+            title: Text(_index == 0 ? 'AstroCare' : titles[_index]),
+            actions: [
+              // Link with the ground, with the number of reports waiting on board.
+              IconButton(
+                tooltip: t('tx.title'),
+                onPressed: () => Navigator.of(
+                  context,
+                ).push(MaterialPageRoute<void>(builder: (_) => const TransmissionPage())),
+                icon: Badge(
+                  isLabelVisible: appState.queuedReports > 0,
+                  label: Text('${appState.queuedReports}'),
+                  child: const Icon(Icons.satellite_alt),
+                ),
+              ),
+              const SizedBox(width: 4),
+            ],
+          ),
           body: SafeArea(child: _page()),
           floatingActionButton: _index == 0
               ? FloatingActionButton.extended(
@@ -58,6 +76,7 @@ class _HomeShellState extends State<HomeShell> {
                 icon: const Icon(Icons.accessibility_new),
                 label: titles[1],
               ),
+
               NavigationDestination(
                 icon: Badge(
                   isLabelVisible: openCount > 0,
@@ -76,5 +95,4 @@ class _HomeShellState extends State<HomeShell> {
       },
     );
   }
-
 }

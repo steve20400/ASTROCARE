@@ -14,8 +14,32 @@ void main() {
   runApp(const AstroCareApp());
 }
  
-class AstroCareApp extends StatelessWidget {
+class AstroCareApp extends StatefulWidget {
   const AstroCareApp({super.key});
+ 
+  @override
+  State<AstroCareApp> createState() => _AstroCareAppState();
+}
+ 
+class _AstroCareAppState extends State<AstroCareApp> with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+ 
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+ 
+  /// When the app comes back to the screen, a report whose time has passed is
+  /// created at once.
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) appState.checkReportDue();
+  }
  
   @override
   Widget build(BuildContext context) {
