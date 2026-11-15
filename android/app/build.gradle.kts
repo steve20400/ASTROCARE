@@ -31,14 +31,13 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId = "com.example.astrocare"
-        // You can update the following values to match your application needs.
-        // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
-        versionCode = flutter.versionCode
-        versionName = flutter.versionName
+        // CI provides an always-increasing build number so every release
+        // installs over the previous one without uninstalling the app.
+        versionCode = (System.getenv("ASTROCARE_VERSION_CODE") ?: "7").toInt()
+        versionName = (System.getenv("ASTROCARE_VERSION_NAME") ?: "2.5.0")
     }
 
     signingConfigs {

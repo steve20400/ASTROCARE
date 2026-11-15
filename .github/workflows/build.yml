@@ -79,6 +79,12 @@ jobs:
             echo "No keystore secret found - building with debug signing."
           fi
 
+      - name: Compute version name from pubspec
+        id: ver
+        run: |
+          base="$(grep -E '^version:' pubspec.yaml | awk '{print $2}' | cut -d+ -f1 | cut -d. -f1-2)"
+          echo "name=${base}" >> "$GITHUB_OUTPUT"
+
       - name: Remove the default template test
         run: rm -f test/widget_test.dart
 
@@ -90,18 +96,21 @@ jobs:
         continue-on-error: true
 
       - name: Build release APK (auto-incremented versionCode)
+        env:
+          ASTROCARE_VERSION_CODE: ${{ github.run_number }}
+          ASTROCARE_VERSION_NAME: ${{ steps.ver.outputs.name }}
         run: flutter build apk --release --build-number=${{ github.run_number }}
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: astrocare-apk-v1.0.${{ github.run_number }}
+          name: astrocare-apk-v${{ steps.ver.outputs.name }}.${{ github.run_number }}
           path: build/app/outputs/flutter-apk/app-release.apk
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v1.0.${{ github.run_number }}
-          name: AstroCare v1.0.${{ github.run_number }}
+          tag_name: v${{ steps.ver.outputs.name }}.${{ github.run_number }}
+          name: AstroCare v${{ steps.ver.outputs.name }}.${{ github.run_number }}
           files: build/app/outputs/flutter-apk/app-release.apk
           generate_release_notes: true
