@@ -1,5 +1,6 @@
 import 'dart:convert';
  
+import 'package:astrocare/app/app_state.dart';
 import 'package:astrocare/data/remote_api.dart';
 import 'package:astrocare/data/simple_pdf.dart';
 import 'package:astrocare/domain/analysis.dart';
@@ -8,6 +9,7 @@ import 'package:astrocare/domain/models.dart';
 import 'package:astrocare/l10n/strings.dart';
 import 'package:astrocare/ui/body_page.dart';
 import 'package:astrocare/ui/first_aid_page.dart';
+import 'package:astrocare/ui/indicator_page.dart';
 import 'package:astrocare/ui/login_page.dart';
 import 'package:astrocare/ui/theme.dart';
 import 'package:flutter/material.dart';
@@ -74,10 +76,11 @@ void main() {
       RemoteApi.errorCode('{"code":400,"error_code":"invalid_credentials","msg":"x"}', 400),
       'INVALID_CREDENTIALS',
     );
+
     expect(RemoteApi.errorCode('{"code":"42501","message":"rls"}', 403), 'PERMISSION_DENIED');
     expect(RemoteApi.errorCode('not json', 500), 'HTTP_500');
-
   });
+ 
   test('the PDF writer produces a well-formed file', () {
     final bytes = SimplePdf.build([
       const PdfLine('AstroCare - Rapport de santé', size: 18, bold: true),
@@ -115,7 +118,10 @@ void main() {
     }
   });
  
-  testWidgets('the 3D figure draws, turns and reacts to a touched zone', (tester) async {
+  testWidgets('the 3D figure draws, turns, zooms and opens the touched part', (tester) async {
+    tester.view.physicalSize = const Size(400, 720);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
     for (final dark in [false, true]) {
       await tester.pumpWidget(
         MaterialApp(
@@ -123,15 +129,60 @@ void main() {
           home: const Scaffold(body: BodyPage()),
         ),
       );
-      await tester.pump(const Duration(milliseconds: 400));
-      expect(find.text('Heart'), findsWidgets);
-      await tester.tap(find.text('Head'));
-      await tester.pump(const Duration(milliseconds: 100));
-      expect(find.text('Head: sleep and mood'), findsOneWidget);
-      await tester.drag(find.byType(CustomPaint).first, const Offset(120, 0));
+      await tester.pump(const Duration(milliseconds: 300));
+      // The chest is touched on the body itself, not on a marker.
+      final box = tester.getRect(find.byType(BodyPage));
+      await tester.tapAt(Offset(box.center.dx - 30, box.top + box.height * 0.26));
+      await tester.pump(const Duration(milliseconds: 600));
+      expect(find.text('Chest and heart'), findsOneWidget);
+      expect(find.text('Health and illness thresholds'), findsOneWidget);
+      await tester.tap(find.byTooltip('Whole body'));
+      await tester.pump(const Duration(milliseconds: 600));
+      expect(find.text('Chest and heart'), findsNothing);
+      await tester.tap(find.byTooltip('Zoom in'));
+      await tester.pump(const Duration(milliseconds: 600));
+      await tester.dragFrom(box.center, const Offset(120, 40));
       await tester.pump(const Duration(milliseconds: 100));
       expect(tester.takeException(), isNull);
     }
     await tester.pumpWidget(const SizedBox());
+  });
+ 
+  testWidgets('the curve follows the chosen period', (tester) async {
+    tester.view.physicalSize = const Size(420, 900);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    final now = DateTime.now();
+    appState.measurements.addAll([
+      Measurement(id: 't1', indicator: 'heartRate', value: 64, at: now),
+      Measurement(
+        id: 't2',
+        indicator: 'heartRate',
+        value: 80,
+        at: now.subtract(const Duration(days: 3)),
+      ),
+
+      Measurement(
+        id: 't3',
+        indicator: 'heartRate',
+        value: 110,
+        at: now.subtract(const Duration(days: 20)),
+      ),
+    ]);
+    addTearDown(() => appState.measurements.removeWhere((m) => m.id.startsWith('t')));
+    await tester.pumpWidget(
+      MaterialApp(theme: buildTheme(false), home: const IndicatorPage(code: 'heartRate')),
+    );
+    await tester.tap(find.text('24 h'));
+    await tester.pump();
+    expect(find.text('1 measurement(s) in this period'), findsOneWidget);
+    await tester.tap(find.text('7 days'));
+    await tester.pump();
+    expect(find.text('2 measurement(s) in this period'), findsOneWidget);
+    await tester.tap(find.text('All'));
+    await tester.pump();
+    expect(find.text('3 measurement(s) in this period'), findsOneWidget);
+    expect(find.text('110 bpm'), findsWidgets);
+    expect(tester.takeException(), isNull);
   });
 }

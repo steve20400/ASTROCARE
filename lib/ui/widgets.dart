@@ -6,7 +6,7 @@ import '../app/app_state.dart';
 import '../domain/models.dart';
 import 'theme.dart';
  
-/// The AstroCare logo (assets/logo.png). It is drawn for a dark blue background.
+/// The AstroCare logo (assets/images/logo.png). It is drawn for a dark blue background.
 /// When the image is missing from the build, a text version is shown instead.
 class AppLogo extends StatelessWidget {
   final double height;
@@ -16,7 +16,7 @@ class AppLogo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Image.asset(
-      'assets/logo.png',
+      'assets/images/logo.png',
       height: height,
       fit: BoxFit.contain,
       semanticLabel: 'AstroCare',
@@ -169,12 +169,21 @@ class LineChart extends StatelessWidget {
   final double? bandLow;
   final double? bandHigh;
  
+  /// Horizontal position of each point, from 0 (start of the period) to 1 (its end).
+  /// Without it, the points are spread evenly.
+  final List<double>? xs;
+  final String? startLabel;
+  final String? endLabel;
+ 
   const LineChart({
     super.key,
     required this.values,
     required this.levels,
     this.bandLow,
     this.bandHigh,
+    this.xs,
+    this.startLabel,
+    this.endLabel,
   });
  
   @override
@@ -189,6 +198,9 @@ class LineChart extends StatelessWidget {
           pointColors: [for (final l in levels) levelColor(context, l)],
           bandLow: bandLow,
           bandHigh: bandHigh,
+          xs: xs,
+          startLabel: startLabel,
+          endLabel: endLabel,
           lineColor: scheme.primary,
           bandColor: levelColor(context, AlertLevel.nominal).withAlpha(40),
           gridColor: scheme.outline.withAlpha(90),
@@ -204,6 +216,9 @@ class _LineChartPainter extends CustomPainter {
   final List<Color> pointColors;
   final double? bandLow;
   final double? bandHigh;
+  final List<double>? xs;
+  final String? startLabel;
+  final String? endLabel;
   final Color lineColor;
   final Color bandColor;
   final Color gridColor;
@@ -214,12 +229,14 @@ class _LineChartPainter extends CustomPainter {
     required this.pointColors,
     required this.bandLow,
     required this.bandHigh,
+    required this.xs,
+    required this.startLabel,
+    required this.endLabel,
     required this.lineColor,
     required this.bandColor,
     required this.gridColor,
     required this.textColor,
   });
- 
   void _label(Canvas canvas, String text, Offset at) {
     final tp = TextPainter(
       text: TextSpan(
@@ -229,6 +246,7 @@ class _LineChartPainter extends CustomPainter {
       textDirection: TextDirection.ltr,
     )..layout();
     tp.paint(canvas, Offset(at.dx, at.dy - tp.height / 2));
+
   }
  
   @override
@@ -237,7 +255,7 @@ class _LineChartPainter extends CustomPainter {
     const left = 40.0;
     const right = 10.0;
     const top = 10.0;
-    const bottom = 12.0;
+    final bottom = startLabel == null ? 12.0 : 26.0;
     final w = size.width - left - right;
     final h = size.height - top - bottom;
  
@@ -246,7 +264,6 @@ class _LineChartPainter extends CustomPainter {
     if (bandLow != null && bandLow! < lo) lo = bandLow!;
     if (bandHigh != null && bandHigh! > hi) hi = bandHigh!;
     if ((hi - lo).abs() < 1e-9) {
-
       hi += 1;
       lo -= 1;
     }
@@ -255,7 +272,23 @@ class _LineChartPainter extends CustomPainter {
     hi += pad;
  
     double yOf(double v) => top + h - (v - lo) / (hi - lo) * h;
-    double xOf(int i) => values.length == 1 ? left + w / 2 : left + w * i / (values.length - 1);
+    double xOf(int i) {
+      final x = xs;
+      if (x != null && i < x.length) return left + w * x[i].clamp(0.0, 1.0);
+      return values.length == 1 ? left + w / 2 : left + w * i / (values.length - 1);
+    }
+    // Start and end of the period, under the curve.
+    if (startLabel != null) _label(canvas, startLabel!, Offset(left, size.height - 8));
+    if (endLabel != null) {
+      final tp = TextPainter(
+        text: TextSpan(
+          text: endLabel,
+          style: TextStyle(color: textColor, fontSize: 10.5),
+        ),
+        textDirection: TextDirection.ltr,
+      )..layout();
+      tp.paint(canvas, Offset(left + w - tp.width, size.height - 8 - tp.height / 2));
+    }
  
     if (bandLow != null && bandHigh != null) {
       canvas.drawRect(
@@ -298,4 +331,5 @@ class _LineChartPainter extends CustomPainter {
  
   @override
   bool shouldRepaint(covariant _LineChartPainter oldDelegate) => true;
+
 }

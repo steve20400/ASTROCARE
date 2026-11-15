@@ -91,7 +91,6 @@ const Map<String, String> kEn = {
   "ind.how": "How to measure",
   "ind.space": "In space",
   "ind.history": "History",
-  "ind.needTwo": "Record at least two measurements to see the curve.",
   "ind.measure": "Measure",
   "range.nominal": "Nominal: {0} to {1} {2}",
   "range.note": "Indicative values for healthy adults on Earth.",
@@ -161,8 +160,8 @@ const Map<String, String> kEn = {
   "ind.mood.how": "Answer honestly: how do you feel right now?",
   "ind.mood.space": "Isolation, confinement and distance from family weigh on morale.",
   "alert.reco": "Follow-up",
-
   "aid.title": "First aid",
+
   "aid.guide": "First-aid guide",
   "aid.guide.hint": "What to do, step by step. Works without connection.",
   "aid.intro":
@@ -234,19 +233,59 @@ const Map<String, String> kEn = {
       "everything, or you think about harming yourself. Also ask for a private "
       "conference with the ground team.",
   "nav.body": "Body",
-  "body.hint": "Slide to turn. Touch a zone.",
+  "body.hint": "One finger: turn. Two fingers: zoom and move. Touch a part of the body.",
   "body.spin": "Automatic rotation",
-  "zone.head.short": "Head",
-  "zone.heart.short": "Heart",
-  "zone.body.short": "Body",
+  "body.zoomIn": "Zoom in",
+  "body.zoomOut": "Zoom out",
+  "body.reset": "Whole body",
+  "body.yours": "Your last value",
+  "body.details": "Details",
+  "body.inSpace": "In space, according to NASA",
+  "body.none": "No indicator is tracked for this part of the body in this version.",
+  "ref.title": "Health and illness thresholds",
+  "ref.range": "{0} to {1}",
+  "ref.below": "below {0}",
+  "ref.above": "above {0}",
+
+  "ref.or": "or",
+  "ref.nominal": "Healthy: {0} {1}",
+  "ref.attention": "Watch: {0} {1}",
+  "ref.critical": "Critical: {0} {1}",
   "zone.head.name": "Head: sleep and mood",
-  "zone.heart.name": "Heart",
-  "zone.body.name": "Whole body: temperature",
+  "zone.chest.name": "Chest and heart",
+  "zone.abdomen.name": "Abdomen: body temperature",
+  "zone.arms.name": "Arms: muscles",
+  "zone.legs.name": "Legs: bones and muscles",
+  "zone.head.nasa":
+      "Chronic sleep loss, constant work demands and a disturbed internal clock wear "
+      "the crew down. Isolation and the distance from Earth can also weigh on mental "
+      "health.",
+  "zone.chest.nasa":
+      "Weightlessness changes blood circulation and the way the heart and blood "
+      "vessels work, which may raise the risk of cardiovascular events.",
+  "zone.abdomen.nasa":
+      "The stress of spaceflight changes the immune system and can wake up dormant "
+      "viruses in the body. An abnormal temperature can be an early sign of "
+      "infection.",
+  "zone.arms.nasa":
+      "Muscles weaken when they no longer carry weight. All astronauts exercise "
+      "during their mission to limit the loss of muscle strength.",
+  "zone.legs.nasa":
+      "Without gravity, bones break down and become more brittle. NASA limits this "
+      "with diet, exercise and medication.",
+  "period.24h": "24 h",
+  "period.7d": "7 days",
+  "period.30d": "30 days",
+  "period.all": "All",
+  "trend.min": "Lowest",
+  "trend.avg": "Average",
+  "trend.max": "Highest",
+  "trend.count": "{0} measurement(s) in this period",
+  "trend.none": "No measurement in this period.",
 };
  
 const Map<String, String> kFr = {
   "nav.home": "Accueil",
-
   "nav.alerts": "Alertes",
   "nav.settings": "Réglages",
   "level.nominal": "Nominal",
@@ -292,6 +331,7 @@ const Map<String, String> kFr = {
   "err.EMAIL_NOT_CONFIRMED": "Ce compte doit d'abord être confirmé par e-mail.",
   "err.OVER_REQUEST_RATE_LIMIT": "Trop d'essais. Attendez une minute et réessayez.",
   "err.PERMISSION_DENIED": "Accès refusé par la base en ligne.",
+
   "err.TABLE_MISSING": "Les tables en ligne sont absentes. Exécutez supabase/schema.sql.",
   "err.generic": "Une erreur est survenue ({0}). Réessayez.",
   "home.hello": "Bonjour, {0}",
@@ -326,12 +366,10 @@ const Map<String, String> kFr = {
   "ind.how": "Comment mesurer",
   "ind.space": "Dans l'espace",
   "ind.history": "Historique",
-  "ind.needTwo": "Enregistrez au moins deux mesures pour voir la courbe.",
   "ind.measure": "Mesurer",
   "range.nominal": "Nominal : de {0} à {1} {2}",
   "range.note": "Valeurs indicatives pour un adulte en bonne santé sur Terre.",
   "alerts.none": "Aucune alerte.",
-
   "alerts.open": "Alertes ouvertes",
   "alerts.past": "Alertes résolues",
   "alert.value": "Valeur mesurée",
@@ -378,6 +416,7 @@ const Map<String, String> kFr = {
   "ind.heartRate.what": "Nombre de battements du cœur par minute, au repos.",
   "ind.heartRate.how":
       "Restez immobile 5 minutes. Utilisez l'oxymètre, ou comptez le "
+
       "pouls au poignet pendant 60 secondes.",
   "ind.heartRate.space":
       "En apesanteur, le cœur travaille autrement et peut se "
@@ -416,7 +455,6 @@ const Map<String, String> kFr = {
       "Valeur critique : prévenez l'officier médical tout de suite, puis suivez ces "
       "étapes.",
   "aid.ref": "Référence NASA HRP",
-
   "aid.source":
       "Gestes généraux de premiers secours, reliés aux risques listés par le Human "
       "Research Program de la NASA. Ils ne remplacent ni l'officier médical ni les "
@@ -463,6 +501,7 @@ const Map<String, String> kFr = {
   "aid.sleepDuration.low.steps":
       "Dites à vos coéquipiers que vous êtes fatigué avant toute tâche à "
       "risque.|Reportez les tâches critiques, ou demandez à un coéquipier de vérifier "
+
       "votre travail.|Faites une sieste de 20 à 30 minutes.|Pas de café dans les 6 "
       "heures avant de dormir.|Baissez la lumière et arrêtez les écrans une heure "
       "avant de dormir, et gardez des horaires fixes.",
@@ -489,12 +528,55 @@ const Map<String, String> kFr = {
       "pour tout, ou vous pensez à vous faire du mal. Demandez aussi une conférence "
       "privée avec l'équipe au sol.",
   "nav.body": "Corps",
-  "body.hint": "Glissez pour tourner. Touchez une zone.",
+  "body.hint":
+      "Un doigt : tourner. Deux doigts : zoomer et déplacer. Touchez une partie du "
+      "corps.",
   "body.spin": "Rotation automatique",
-  "zone.head.short": "Tête",
-  "zone.heart.short": "Cœur",
-  "zone.body.short": "Corps",
+  "body.zoomIn": "Zoomer",
+  "body.zoomOut": "Dézoomer",
+  "body.reset": "Corps entier",
+  "body.yours": "Votre dernière valeur",
+  "body.details": "Détails",
+  "body.inSpace": "Dans l'espace, selon la NASA",
+  "body.none": "Aucun indicateur n'est suivi pour cette partie du corps dans cette version.",
+  "ref.title": "Seuils de santé et de maladie",
+  "ref.range": "de {0} à {1}",
+  "ref.below": "moins de {0}",
+  "ref.above": "plus de {0}",
+  "ref.or": "ou",
+  "ref.nominal": "Sain : {0} {1}",
+  "ref.attention": "À surveiller : {0} {1}",
+  "ref.critical": "Critique : {0} {1}",
   "zone.head.name": "Tête : sommeil et humeur",
-  "zone.heart.name": "Cœur",
-  "zone.body.name": "Corps entier : température",
+  "zone.chest.name": "Thorax et cœur",
+  "zone.abdomen.name": "Abdomen : température du corps",
+  "zone.arms.name": "Bras : muscles",
+  "zone.legs.name": "Jambes : os et muscles",
+  "zone.head.nasa":
+      "Le manque de sommeil chronique, la charge de travail constante et une horloge "
+      "interne déréglée usent l'équipage. L'isolement et la distance de la Terre "
+      "peuvent aussi peser sur la santé mentale.",
+  "zone.chest.nasa":
+      "L'apesanteur modifie la circulation du sang et le fonctionnement du cœur et "
+      "des vaisseaux, ce qui peut augmenter le risque d'accident cardiovasculaire.",
+  "zone.abdomen.nasa":
+      "Le stress du vol spatial modifie le système immunitaire et peut réveiller des "
+      "virus dormants dans le corps. Une température anormale peut être un premier "
+      "signe d'infection.",
+  "zone.arms.nasa":
+      "Les muscles s'affaiblissent quand ils ne portent plus de poids. Tous les "
+      "astronautes font de l'exercice pendant leur mission pour limiter la perte de "
+      "force.",
+  "zone.legs.nasa":
+      "Sans gravité, les os se dégradent et deviennent plus fragiles. La NASA limite "
+      "cela par l'alimentation, l'exercice et les médicaments.",
+  "period.24h": "24 h",
+  "period.7d": "7 jours",
+  "period.30d": "30 jours",
+  "period.all": "Tout",
+  "trend.min": "Plus bas",
+  "trend.avg": "Moyenne",
+  "trend.max": "Plus haut",
+  "trend.count": "{0} mesure(s) sur cette période",
+  "trend.none": "Aucune mesure sur cette période.",
 };

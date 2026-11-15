@@ -9,8 +9,10 @@ Team **Falcon Health** - NASA Space Apps Challenge 2026, challenge
 - Each astronaut signs in to a personal account **before the mission**, while online.
 - In space the app needs **no connection**: everything is stored on the device.
 - Four indicators: heart rate, body temperature, sleep, mood.
-- A 3D astronaut that turns with the finger: head, heart and whole body take the
-  color of their status. It is drawn by the code, with no 3D model and no network.
+- A human figure in real 3D: turn it in every direction, zoom, and touch a part of the
+  body to see its health and illness thresholds, the related NASA risk and your own
+  last values with their color code. It is drawn by the code: no 3D file, no network.
+- For each indicator, a curve over the last 24 hours, 7 days, 30 days or everything.
 - Green, orange or red status, always with an icon and a text label.
 - Alerts with step-by-step first aid, chosen from the indicator and the direction of the
   deviation, and the warning signs that require the medical officer.
@@ -37,7 +39,9 @@ Team **Falcon Health** - NASA Space Apps Challenge 2026, challenge
 - Colors: NASA Space Apps brand guidelines (June 2026). Blues dominate, Neon Yellow is
   an accent only, reds are never a background, contrast is at least 4.5:1.
 - Font: Fira Sans (SIL Open Font License), downloaded by `tool/get_fonts.sh` at build time.
-- Logo: `assets/logo.png`, the team's own logo. No NASA logo or identity is used.
+- Logo: `assets/images/logo.png`, the team's own logo, also used as the app icon
+  (`tool/make_icon.py`). No NASA logo or identity is used.
+ 
 ## Build
  
 GitHub Actions builds the Android APK on every push to `main`
